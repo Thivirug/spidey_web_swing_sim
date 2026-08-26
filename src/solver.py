@@ -1,7 +1,7 @@
-# rk4 
-
 import numpy as np
-from physics import t_derivatives
+from typing import Tuple
+
+from .physics import t_derivatives
 
 class RK4:
     """
@@ -10,6 +10,15 @@ class RK4:
     """
 
     def __init__(self, T, dt):
+        if T <= 0:
+            raise ValueError("T must be greater than 0.")
+
+        if dt <= 0:
+            raise ValueError("dt must be greater than 0.")
+
+        if dt > T:
+            raise ValueError("dt should not be greater than T.")
+        
         self.T = T
         self.dt = dt
 
@@ -28,7 +37,7 @@ class RK4:
             L
         )
         k4 = t_derivatives(
-            state + 0.5*self.dt*k3, 
+            state + self.dt*k3, 
             L
         )
 
@@ -38,7 +47,7 @@ class RK4:
 
         return new_state
 
-    def simulate(self, theta0, omega0, L):
+    def simulate(self, theta0, omega0, L) -> Tuple[np.ndarray, np.ndarray]:
         """
             Iterate RK4 step for req simulation time
             starting at angle theta0 and ang vel omega0
@@ -49,4 +58,19 @@ class RK4:
 
         # init states vectors for each sim interval
         states = np.zeros(shape=(len(times), 2))
+
+        states[0] = np.array([theta0, omega0])
+
+        for i in range(len(times)-1):
+            # step
+            states[i+1] = self.step(
+                states[i], L
+            )
+
+        # thetas = states[:, 0]
+        # omegas = states[:, 1]
+
+        return times, states
+
+
 
