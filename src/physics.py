@@ -17,9 +17,12 @@ def t_derivatives(state: np.ndarray, L) -> np.ndarray:
         L: Web length
     """
 
-    # vaidate state
+    # vaidate state and length
     if not np.isfinite(state).all():
         raise ValueError("Invalid numerical state inputs")
+
+    if L <=0:
+        raise ValueError("Invalid web length")
     
     theta, omega = state[0], state[1]
 
