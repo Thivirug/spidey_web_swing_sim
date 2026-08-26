@@ -7,7 +7,7 @@ import numpy as np
 # add parent dir to path for module imports
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.physics import t_derivatives, g
+from src.physics import t_derivatives, energy, g
 
 class TDerivtests(unittest.TestCase):
     def test_simple(self):
@@ -59,6 +59,61 @@ class TDerivtests(unittest.TestCase):
 
         self.assertAlmostEqual(result[0], omega)
         self.assertAlmostEqual(result[1], expected_dom)
+
+class TestEnergy(unittest.TestCase):
+
+    def test_energy_at_rest_bottom(self):
+        # theta = 0 and omega = 0 -> KE = 0, PE = 0
+        m = 2.0
+        L = 3.0
+        state = np.array([0.0, 0.0])
+
+        res = energy(m, L, state)
+        self.assertAlmostEqual(res, 0.0)
+
+    def test_kinetic_only(self):
+        # theta =0 -> PE=0
+        m = 2.0
+        L = 3.0
+        omega = 4.0
+        state = np.array([0.0, omega])
+
+        expected = 0.5*m*np.pow(L*omega,2)
+        res = energy(m, L, state)
+
+        self.assertAlmostEqual(res, expected)
+
+    def test_energy_potential_only(self):
+        # omega = 0 -> PE only
+        m = 2.0
+        L = 3.0
+        theta = math.pi / 2
+        state = np.array([theta, 0.0])
+
+        expected = m*g*L * (1 - math.cos(theta))
+        result = energy(m, L, state)
+
+        self.assertAlmostEqual(result, expected)
+
+    def test_energy_at_top(self):
+        # theta = pi -> maximum PE = 2mgL
+        m = 1.5
+        L = 2.0
+        state = np.array([math.pi, 0.0])
+
+        expected = 2*m*g*L
+        result = energy(m, L, state)
+
+        self.assertAlmostEqual(result, expected)
+
+    def test_invalid_params(self):
+        state = np.array([0.0, 0.0])
+
+        with self.assertRaises(ValueError):
+            energy(0, 2.0, state)
+
+        with self.assertRaises(ValueError):
+            energy(1.0, 0, state)
 
 if __name__ == '__main__':
     unittest.main()

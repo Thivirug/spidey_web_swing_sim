@@ -31,3 +31,18 @@ def t_derivatives(state: np.ndarray, L) -> np.ndarray:
     d_omega = -(g / L) * np.sin(theta)
 
     return np.array([d_theta, d_omega])
+
+def energy(m, L, state: np.ndarray):
+    """
+        Calc potential energy at a given state and time
+        m: mass
+        L: length of web'
+        state: Contains theta, omega
+    """
+
+    if L <=0 or m<=0:
+            raise ValueError("Invalid params passed")
+
+    theta, omega = state[0], state[1]
+
+    return 0.5*m* np.pow(L*omega, 2) + m*g*L*(1 - np.cos(theta))
