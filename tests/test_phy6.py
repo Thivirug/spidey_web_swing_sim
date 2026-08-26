@@ -14,43 +14,50 @@ class TDerivtests(unittest.TestCase):
         omega = 0.0
         L = 15.0
 
-        dth, dom = t_derivatives(theta, omega, L)
+        state = theta, omega
+        result = t_derivatives(state, L)
 
-        self.assertEqual(dth, omega)
-        self.assertEqual(dom, 0)
+        self.assertEqual(result[0], omega)
+        self.assertEqual(result[1], 0)
 
     def test_horiz_release(self):
         # At theta = pi/2, sin(theta) = 1, domega = -g / L
         L = 2.0
-        dth, dom = t_derivatives(theta=math.pi / 2, omega=0.0, L=L)
 
-        self.assertAlmostEqual(dth, 0.0)
-        self.assertAlmostEqual(dom, -g/L)
+        state = math.pi / 2, 0.0
+        result = t_derivatives(state, L=L)
+
+        self.assertAlmostEqual(result[0], 0.0)
+        self.assertAlmostEqual(result[1], -g/L)
 
     def test_inverted_spidey(self):
         # At top equilibrium (theta = pi), domega = 0
-        dth, dom = t_derivatives(theta=math.pi, omega=1.5, L=1.0)
+        state = math.pi, 1.5
+        result = t_derivatives(state, L=1.0)
 
-        self.assertAlmostEqual(dth, 1.5)
-        self.assertAlmostEqual(dom, 0.0)
+        self.assertAlmostEqual(result[0], 1.5)
+        self.assertAlmostEqual(result[1], 0.0)
 
     def test_negative_angle_restoring_force(self):
         # Negative angle should accelerate positively back toward equilibrium
         L = 0.5
-        dth, dom = t_derivatives(theta=-math.pi / 2, omega=-0.5, L=L)
+        state = -math.pi / 2, -0.5
+        result = t_derivatives(state, L=L)
         
-        self.assertAlmostEqual(dth, -0.5)
-        self.assertAlmostEqual(dom, g / L)
+        self.assertAlmostEqual(result[0], -0.5)
+        self.assertAlmostEqual(result[1], g / L)
 
     def test_nonzero_velocity_and_length(self):
         # General case check with arbitrarily chosen parameters
         theta, omega, L = 0.5, 2.5, 3.0
+
+        state = theta, omega
         expected_dom = -(g / L) * math.sin(theta)
 
-        dth, dom = t_derivatives(theta, omega, L)
+        result = t_derivatives(state, L)
 
-        self.assertAlmostEqual(dth, omega)
-        self.assertAlmostEqual(dom, expected_dom)
+        self.assertAlmostEqual(result[0], omega)
+        self.assertAlmostEqual(result[1], expected_dom)
 
 if __name__ == '__main__':
     unittest.main()

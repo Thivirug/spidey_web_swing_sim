@@ -5,19 +5,20 @@ import numpy as np
 # grav accel
 g = 9.81
 
-def t_derivatives(theta, omega, L):
+def t_derivatives(state, L) -> np.ndarray:
     """
         calc dtheta/dt & domega/dt
 
-        theta: Ang displacement in rad
-        omega: Ang velocity
+        state: 
+            - theta: Ang displacement in rad
+            - omega: Ang velocity
         L: Web length
     """
 
     # vaidate args
-
+    theta, omega = state
 
     d_theta = omega
     d_omega = -(g / L) * np.sin(theta)
 
-    return d_theta, d_omega
+    return np.array([d_theta, d_omega])
