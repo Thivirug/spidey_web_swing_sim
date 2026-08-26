@@ -7,7 +7,8 @@ g = 9.81
 
 def t_derivatives(state: np.ndarray, L) -> np.ndarray:
     """
-        calc dtheta/dt & domega/dt
+        Take the current state vector [theta, omega]
+        & calc dtheta/dt & domega/dt
 
         state: 
             - theta: Ang displacement in rad
