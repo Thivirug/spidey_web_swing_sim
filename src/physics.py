@@ -5,7 +5,7 @@ import numpy as np
 # grav accel
 g = 9.81
 
-def t_derivatives(state, L) -> np.ndarray:
+def t_derivatives(state: np.ndarray, L) -> np.ndarray:
     """
         calc dtheta/dt & domega/dt
 
@@ -16,7 +16,7 @@ def t_derivatives(state, L) -> np.ndarray:
     """
 
     # vaidate args
-    theta, omega = state
+    theta, omega = state[0], state[1]
 
     d_theta = omega
     d_omega = -(g / L) * np.sin(theta)
