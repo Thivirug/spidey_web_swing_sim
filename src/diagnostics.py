@@ -37,4 +37,8 @@ def plot_energy_err(times, relative_error):
     plt.ylabel("Relative energy error")
     plt.title("RK4 Energy Conservation")
     plt.axhline(0)
-    plt.show()
+    plt.savefig(
+        "output/figures/rk4_energy_conservation.png",
+        dpi=300,
+        bbox_inches="tight"
+    )
