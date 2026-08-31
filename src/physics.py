@@ -34,7 +34,7 @@ def t_derivatives(state: np.ndarray, L) -> np.ndarray:
 
 def energy(m, L, state: np.ndarray):
     """
-        Calc potential energy at a given state and time
+        Calc total mech energy at a given state and time
         m: mass
         L: length of web'
         state: Contains theta, omega
