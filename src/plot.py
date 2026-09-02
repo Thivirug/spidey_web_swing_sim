@@ -1,7 +1,5 @@
 from .diagnostics import energy_diagnostic, plot_energy_err, sim_swing_traj, plot_swing_traj
 
-import numpy as np
-
 # -------------------------------------------------------
 def show_energy_plot():
     times, _, rel_errors = energy_diagnostic(
