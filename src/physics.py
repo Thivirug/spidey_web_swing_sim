@@ -5,7 +5,7 @@ import numpy as np
 # grav accel
 g = 9.81
 
-def t_derivatives(state: np.ndarray, L) -> np.ndarray:
+def t_derivatives(state: np.ndarray, L) -> np.ndarray:    # NOTE: During attached state
     """
 
         Take the current state vector [theta, omega]
