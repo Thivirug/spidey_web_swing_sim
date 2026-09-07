@@ -3,7 +3,7 @@
 import numpy as np
 
 from .solver import RK4
-from .utils import attached_to_released_state
+from .utils import attached_to_released_state, interpolate_landing
 
 # phases
 ATTACHED = "attached"
@@ -68,6 +68,17 @@ def simv1(
             y, vy = state[1], state[3]
 
             if y <= y_ground and vy < 0: # ground hit
+                # linearly interpolate for better precision
+                if len(released_states)>=2:
+                    t_prev, state_prev = released_states[-2]
+                    t_curr, state_curr = released_states[-1]
+
+                    inter_land_t, inter_land_state = interpolate_landing(t_prev, t_curr, state_prev, state_curr, y_ground)
+
+                    # update released states and times
+                    released_states[-1] = (inter_land_t, inter_land_state)
+                    times[-1] = inter_land_t
+
                 break
 
             # go to next released state

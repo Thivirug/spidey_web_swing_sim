@@ -53,3 +53,26 @@ def attached_to_released_state(
         vx,
         vy
     ])
+
+def interpolate_landing(t_prev, t_curr, state_prev, state_curr, y_ground):
+    """
+        Interpolate landing time and state between two projectile states.
+    """
+    if np.isclose(y2, y1):
+        raise ValueError(
+            "Cannot interpolate landing when y values are equal."
+        )
+    
+    y1 = state_prev[1]
+    y2 = state_curr[1]
+
+    alpha = (
+        (y_ground - y1) / (y2-y1)
+    )
+
+    land_t = t_prev + alpha * (t_curr - t_prev)
+    land_state = state_prev + alpha * (state_curr - state_prev)
+
+    land_state[1] = y_ground # set this back to avoid floating point mismatches
+
+    return land_t, land_state
