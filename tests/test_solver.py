@@ -9,34 +9,24 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.solver import RK4
 
 class SolverTests(unittest.TestCase):
-    def test_invalid_T(self):
-        with self.assertRaises(ValueError):
-            RK4(T=0, dt=0.01)
-
-        with self.assertRaises(ValueError):
-            RK4(T=-1, dt=0.01)
-
     def test_invalid_dt(self):
         with self.assertRaises(ValueError):
-            RK4(T=5, dt=0)
+            RK4(dt=0)
 
         with self.assertRaises(ValueError):
-            RK4(T=5, dt=-0.01)
-
-    def test_dt_greater_than_T(self):
-        with self.assertRaises(ValueError):
-            RK4(T=1, dt=2)
+            RK4(dt=-0.01)
 
     def test_equilibrium_remains_stationary(self):
         """
             theta = 0 and omega = 0 should remain stationary.
         """
-        solver = RK4(T=2.0, dt=0.01)
+        solver = RK4(dt=0.01)
 
         times, states = solver.simulate(
             theta0=0.0,
             omega0=0.0,
-            L=15.0
+            L=15.0,
+            T=2.0
         )
 
         np.testing.assert_allclose(
@@ -46,19 +36,20 @@ class SolverTests(unittest.TestCase):
         )
 
     def test_output_shapes_match(self):
-        solver = RK4(T=1.0, dt=0.01)
+        solver = RK4(dt=0.01)
 
         times, states = solver.simulate(
             theta0=np.radians(30),
             omega0=0.0,
-            L=15.0
+            L=15.0,
+            T=1.0
         )
 
         self.assertEqual(len(times), len(states))
         self.assertEqual(states.shape[1], 2)
 
     def test_initial_state_is_preserved(self):
-        solver = RK4(T=1.0, dt=0.01)
+        solver = RK4(dt=0.01)
 
         theta0 = np.radians(-45)
         omega0 = 0.5
@@ -66,7 +57,8 @@ class SolverTests(unittest.TestCase):
         times, states = solver.simulate(
             theta0=theta0,
             omega0=omega0,
-            L=15.0
+            L=15.0,
+            T=1.0
         )
 
         self.assertAlmostEqual(states[0, 0], theta0)
@@ -77,12 +69,13 @@ class SolverTests(unittest.TestCase):
             Starting at positive theta with omega=0 should initially
             accelerate back toward theta=0.
         """
-        solver = RK4(T=0.01, dt=0.01)
+        solver = RK4(dt=0.01)
 
         _, states = solver.simulate(
             theta0=np.radians(30),
             omega0=0.0,
-            L=15.0
+            L=15.0,
+            T=0.01
         )
 
         # after the first step, omega should be negative
@@ -93,12 +86,13 @@ class SolverTests(unittest.TestCase):
             Starting at negative theta with omega=0 should initially
             accelerate back toward theta=0.
         """
-        solver = RK4(T=0.01, dt=0.01)
+        solver = RK4(dt=0.01)
 
         _, states = solver.simulate(
             theta0=np.radians(-30),
             omega0=0.0,
-            L=15.0
+            L=15.0,
+            T=0.01
         )
 
         self.assertGreater(states[1, 1], 0)

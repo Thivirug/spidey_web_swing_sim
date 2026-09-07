@@ -12,12 +12,13 @@ def energy_diagnostic(T, dt, the0, omeg0, L, m):
         the0 - in degrees
     """
 
-    rk4 = RK4(T, dt)
+    rk4 = RK4(dt)
 
     times, states = rk4.simulate(
         np.radians(the0), 
         omeg0,
-        L
+        L,
+        T
     )
 
     energies = np.array([
@@ -66,12 +67,13 @@ def sim_swing_traj(L, theta0, omega0, T, dt) -> np.ndarray:
     """ 
         Simulate the swing trajectory and return angle values
     """
-    rk4 = RK4(T, dt)
+    rk4 = RK4(dt)
     
     _, states = rk4.simulate(
         np.radians(theta0), 
         omega0,
-        L
+        L,
+        T
     )
 
     return states[:, 0]
