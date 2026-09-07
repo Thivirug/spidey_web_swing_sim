@@ -23,3 +23,33 @@ def get_vel_comps(omega, theta, L):
 
     return v_x, v_y
 
+def attached_to_released_state(
+    state: np.ndarray,
+    anchor,
+    L
+) -> np.ndarray:
+    """
+    Convert attached state [theta, omega]
+    into released state [x, y, vx, vy].
+    """
+
+    theta, omega = state
+
+    x, y = angle_to_pos_conv(
+        anchor,
+        theta,
+        L
+    )
+
+    vx, vy = get_vel_comps(
+        omega,
+        theta,
+        L
+    )
+
+    return np.array([
+        x,
+        y,
+        vx,
+        vy
+    ])
