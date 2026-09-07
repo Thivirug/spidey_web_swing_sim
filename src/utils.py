@@ -58,13 +58,14 @@ def interpolate_landing(t_prev, t_curr, state_prev, state_curr, y_ground):
     """
         Interpolate landing time and state between two projectile states.
     """
+    
+    y1 = state_prev[1]
+    y2 = state_curr[1]
+
     if np.isclose(y2, y1):
         raise ValueError(
             "Cannot interpolate landing when y values are equal."
         )
-    
-    y1 = state_prev[1]
-    y2 = state_curr[1]
 
     alpha = (
         (y_ground - y1) / (y2-y1)
