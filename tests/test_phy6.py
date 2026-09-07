@@ -7,7 +7,7 @@ import numpy as np
 # add parent dir to path for module imports
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.physics import t_derivatives, energy, g
+from src.physics import t_derivatives, energy, g, t_derivatives_released
 
 class TDerivtests(unittest.TestCase):
     def test_simple(self):
@@ -114,6 +114,126 @@ class TestEnergy(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             energy(1.0, 0, state)
+
+class TestRelDerivs(unittest.TestCase):
+    def test_no_drag_stationary(self):
+        # at rest pos should not change 
+        # v_x=0, v_y=-g
+
+        state = np.array([10.3, 20.45, 0.0, 0.0])
+
+        result = t_derivatives_released(state)
+
+        self.assertAlmostEqual(result[0], 0.0)
+        self.assertAlmostEqual(result[1], 0.0)
+        self.assertAlmostEqual(result[2], 0.0)
+        self.assertAlmostEqual(result[3], -g)
+
+    def test_no_drag_horizontal_motion(self):
+        # Horizontal velocity should remain constant without drag.
+        state = np.array([0.0, 10.0, 5.0, 0.0])
+
+        result = t_derivatives_released(state)
+
+        self.assertAlmostEqual(result[0], 5.0)
+        self.assertAlmostEqual(result[1], 0.0)
+        self.assertAlmostEqual(result[2], 0.0)
+        self.assertAlmostEqual(result[3], -g)
+
+    def test_no_drag_general_velocity(self):
+        # Position derivatives should equal velocity components.
+        state = np.array([2.0, 8.0, 3.5, -4.0])
+
+        result = t_derivatives_released(state)
+
+        self.assertAlmostEqual(result[0], 3.5)
+        self.assertAlmostEqual(result[1], -4.0)
+        self.assertAlmostEqual(result[2], 0.0)
+        self.assertAlmostEqual(result[3], -g)
+
+    def test_drag_horizontal_motion(self):
+        m = 80.0
+        rho = 1.225
+        Cd = 1.0
+        A = 0.7
+
+        vx = 4.0
+        vy = 0.0
+
+        state = np.array([0.0, 10.0, vx, vy])
+
+        speed = 4.0
+        drag_factor = 0.5 * rho * Cd * A
+
+        expected_dvx = -(drag_factor / m) * speed * vx
+        expected_dvy = -g
+
+        result = t_derivatives_released(
+            state,
+            drag_params=(m, rho, Cd, A)
+        )
+
+        self.assertAlmostEqual(result[0], vx)
+        self.assertAlmostEqual(result[1], vy)
+        self.assertAlmostEqual(result[2], expected_dvx)
+        self.assertAlmostEqual(result[3], expected_dvy)
+
+    def test_drag_general_velocity(self):
+        m = 80.0
+        rho = 1.225
+        Cd = 1.0
+        A = 0.7
+
+        vx = 3.0
+        vy = 4.0
+
+        state = np.array([1.0, 2.0, vx, vy])
+
+        speed = 5.0
+
+        drag_factor = 0.5 * rho * Cd * A
+
+        expected_dvx = -(drag_factor / m) * speed * vx
+        expected_dvy = -g - (drag_factor / m) * speed * vy
+
+        result = t_derivatives_released(
+            state,
+            drag_params=(m, rho, Cd, A)
+        )
+
+        self.assertAlmostEqual(result[0], vx)
+        self.assertAlmostEqual(result[1], vy)
+        self.assertAlmostEqual(result[2], expected_dvx)
+        self.assertAlmostEqual(result[3], expected_dvy)
+
+    def test_drag_opposes_downward_motion(self):
+        m = 80.0
+        rho = 1.225
+        Cd = 1.0
+        A = 0.7
+
+        vx = 0.0
+        vy = -4.0
+
+        state = np.array([0.0, 10.0, vx, vy])
+
+        speed = 4.0
+        drag_factor = 0.5 * rho * Cd * A
+
+        expected_dvy = (
+            -g
+            - (drag_factor / m) * speed * vy
+        )
+
+        result = t_derivatives_released(
+            state,
+            drag_params=(m, rho, Cd, A)
+        )
+
+        self.assertAlmostEqual(result[2], 0.0)
+        self.assertAlmostEqual(result[3], expected_dvy)
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,6 +1,7 @@
 # motion phy6 defs
 
 import numpy as np
+from typing import Tuple, Optional
 
 # grav accel
 g = 9.81
@@ -46,3 +47,52 @@ def energy(m, L, state: np.ndarray):
     theta, omega = state[0], state[1]
 
     return 0.5*m* np.pow(L*omega, 2) + m*g*L*(1 - np.cos(theta))
+
+def t_derivatives_released(state: np.ndarray, drag_params: Optional[Tuple[float, float, float, float]]=None):     # NOTE: during released state
+    """
+        Calculate derivatives during released/projectile motion.
+
+        state:
+            - x: horizontal displacement
+            - y: vertical displacement
+            - vx: horizontal velocity
+            - vy: vertical velocity
+
+        drag_params:
+            Optional tuple (m, rho, Cd, A)
+            - m: mass (kg)
+            - rho: air density (kg/m^3)
+            - Cd: dimensionless drag coefficient
+            - A: reference/cross-sectional area (m^2)
+
+        Returns:
+            [dx/dt, dy/dt, dvx/dt, dvy/dt]
+    """
+    # validate state vec
+    if not np.isfinite(state).all():
+            raise ValueError("Invalid numerical state inputs")
+
+    x, y, vx, vy = state
+
+    speed = np.sqrt(vx**2 + vy**2)
+
+    dx = vx
+    dy = vy
+    dv_x = 0.0
+    dv_y = -g
+
+    if drag_params is not None:
+        m, rho, Cd, A = drag_params
+
+        if m <= 0:
+            raise ValueError("Mass must be greater than zero")
+
+        if rho < 0 or Cd < 0 or A < 0:
+            raise ValueError("Invalid drag parameters")
+
+        drag_factor = 0.5 * rho * Cd * A
+
+        dv_x -= (drag_factor / m) * speed * vx
+        dv_y -= (drag_factor / m) * speed * vy
+
+    return np.array([dx, dy, dv_x, dv_y])
