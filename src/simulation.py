@@ -25,7 +25,7 @@ def simv1(
 
     solver = RK4(dt)
     t = 0.0
-    mode = WebAttachedEvent(start_time=t) # starting from attached
+    mode = WebAttachedEvent(start_time=t, anchor=anchor, L=L) # starting from attached
 
     # starting attached state
     state = np.array([
@@ -47,14 +47,14 @@ def simv1(
                 modes.append(mode)
 
                 # release
-                state = attached_to_released_state(state, anchor, L)
+                state = attached_to_released_state(state, mode.anchor, mode.L)
 
                 # create new released mode
                 mode = ReleasedEvent(start_time=t)
 
             else:
                 # go to next attached state
-                state = solver.step(state, L)
+                state = solver.step(state, mode.L)
 
         if isinstance(mode, ReleasedEvent):
             mode.states.append(

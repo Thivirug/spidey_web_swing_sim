@@ -6,6 +6,8 @@ import numpy as np
 @dataclass
 class WebAttachedEvent:
     start_time: float
+    anchor: tuple[float, float]
+    L: float
     end_time: Optional[float] = None
     states: list[tuple[float, np.ndarray]] = field(default_factory=list) # create a new list for each instane
     name: str = field(default="attached", init=False) # not accepted as an arg
