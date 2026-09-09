@@ -1,30 +1,17 @@
 # dataclasses?
 
-from dataclasses import dataclass
-from typing import Dict, Optional
+from dataclasses import dataclass, field
+from typing import Optional
+import numpy as np
 @dataclass
 class WebAttachedEvent:
-    """
-        Swinging
-    """
-    name: str = "attached"
     start_time: float
-    end_time: float
-    metadata: Optional[Dict] = None # storage of state data -> theta omega
-
+    end_time: Optional[float] = None
+    states: list[tuple[float, np.ndarray]] = field(default_factory=list) # create a new list for each instane
+    name: str = field(default="attached", init=False) # not accepted as an arg
 @dataclass
 class ReleasedEvent:
-    """
-        Projectile 
-    """
-    name: str = "released"
     start_time: float
-    end_time: float
-    metadata: Optional[Dict] = None # storage of state data -> x,y,vx,vy
-
-@dataclass
-class LandEvent:
-    name: str = "landed"
-    start_time: float
-    end_time: float
-    metadata: Optional[Dict] = None 
+    end_time: Optional[float] = None
+    states: list[tuple[float, np.ndarray]] = field(default_factory=list)
+    name: str = field(default="released", init=False)
