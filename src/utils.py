@@ -54,6 +54,8 @@ def attached_to_released_state(
         vy
     ])
 
+# TODO: need the inverse of above func for released -> attached transition
+
 def interpolate_landing(t_prev, t_curr, state_prev, state_curr, y_ground):
     """
         Interpolate landing time and state between two projectile states.
