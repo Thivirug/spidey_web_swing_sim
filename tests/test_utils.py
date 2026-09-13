@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from src.utils import angle_to_pos_conv, get_vel_comps
+from src.utils import angle_to_pos_conv, get_vel_comps, attached_to_released_state, released_to_attached_state
 
 
 def test_position_at_bottom():
@@ -112,3 +112,83 @@ def test_velocity_is_tangent_to_swing():
         dot_product = radius_x * vx + radius_y * vy
 
         assert np.isclose(dot_product, 0.0, atol=1e-10)
+
+def test_attached_released_attached_round_trip():
+    """
+        Converting an attached state to released coordinates and back
+        using the same anchor should recover theta, omega and L.
+    """
+    anchor = (3.0, 20.0)
+    L = 12.0
+    theta = 0.6
+    omega = 1.3
+
+    attached_state = np.array([theta, omega])
+
+    released_state = attached_to_released_state(
+        attached_state,
+        anchor,
+        L
+    )
+
+    recovered_state, recovered_L = released_to_attached_state(
+        released_state,
+        anchor
+    )
+
+    assert np.isclose(recovered_state[0], theta)
+    assert np.isclose(recovered_state[1], omega)
+    assert np.isclose(recovered_L, L)
+
+def test_released_to_attached_preserves_negative_omega():
+    """
+        The conversion should preserve rotational direction.
+    """
+    anchor = (0.0, 10.0)
+    L = 8.0
+    theta = 0.4
+    omega = -2.0
+
+    attached_state = np.array([theta, omega])
+
+    released_state = attached_to_released_state(
+        attached_state,
+        anchor,
+        L
+    )
+
+    recovered_state, recovered_L = released_to_attached_state(
+        released_state,
+        anchor
+    )
+
+    assert np.isclose(recovered_state[0], theta)
+    assert np.isclose(recovered_state[1], omega)
+    assert np.isclose(recovered_L, L)
+
+def test_pure_radial_velocity_gives_zero_omega():
+    """
+        If projectile velocity is entirely along the new web,
+        its tangential component is zero, so omega should be zero.
+    """
+    anchor = (0.0, 10.0)
+
+    # Spider-Man is directly below anchor
+    # theta = 0, L = 5
+    state = np.array([
+        0.0,    # x
+        5.0,    # y
+        0.0,    # vx
+        3.0     # vy: moving directly toward anchor
+    ])
+
+    attached_state, L = released_to_attached_state(
+        state,
+        anchor
+    )
+
+    theta, omega = attached_state
+
+    assert np.isclose(L, 5.0)
+    assert np.isclose(theta, 0.0)
+    assert np.isclose(omega, 0.0)
