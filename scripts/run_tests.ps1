@@ -1,6 +1,6 @@
 $ErrorActionPreference = "stop"
 
-Set-Location "$PSScriptRoot\..\.."
+Set-Location "$PSScriptRoot\.."
 
 conda activate spidey
 pytest
