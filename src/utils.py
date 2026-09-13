@@ -116,3 +116,41 @@ def interpolate_landing(t_prev, t_curr, state_prev, state_curr, y_ground):
     land_state[1] = y_ground # set this back to avoid floating point mismatches
 
     return land_t, land_state
+
+def is_anchor_reachable(state, anchor, L_min, L_max):
+    """
+        Check whether an anchor can be reached from the current
+        released position using an allowed web length.
+    """
+
+    x, y, vx, vy = state
+    xa, ya = anchor
+
+    dx = x - xa
+    dy = y - ya
+
+    distance = np.sqrt(dx**2 + dy**2)
+
+    return L_min <= distance <= L_max
+
+def choose_first_reachable_anchor(state, anchors, L_min, L_max, excluded_anchor=None):
+    # NOTE: JUST A TESTING FUNC for sim v2
+    x = state[0]
+
+    for anchor in anchors:
+        if anchor == excluded_anchor:
+            continue
+
+        # only consider anchors ahead
+        if anchor[0] <= x:
+            continue
+
+        if is_anchor_reachable(
+            state,
+            anchor,
+            L_min,
+            L_max
+        ):
+            return anchor
+
+    return None
