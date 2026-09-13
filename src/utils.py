@@ -83,7 +83,7 @@ def released_to_attached_state(
     x_ = x-x_a
     y_ = y-y_a
 
-    L = np.sqrt(x_**2 + y_**2)
+    L = np.hypot(x_, y_)
 
     if L <=0:
         raise ValueError("Invalid web length")
