@@ -4,6 +4,7 @@ from typing import Optional
 from .controller import PolicyParams
 from .simulation import simv3
 from .objectives import objv1, objv2
+from .nelder_mead import NelderMead
 
 def policy_cost(
     obj_info: tuple[str, Optional[dict]], # obj type version name and needed params
@@ -67,6 +68,65 @@ def policy_cost(
         raise ValueError(f"{obj_info} invalid objective")
 
     return -score # since we optimise a maximisation, but the algo is a minimiser
+
+def optimise_policy(
+    initial_p,
+    obj_info,
+    theta0,
+    omega0,
+    initial_L,
+    initial_anchor,
+    T,
+    dt,
+    anchors,
+    drag_params=None,
+    y_ground=0.0,
+    L_min=5.0,
+    L_max=15.0,
+    min_flight_time=0.15,
+    tol=1e-4
+):
+    """
+        Offline optimisation of controller parameters.
+
+        Returns the optimal reusable PolicyParams.
+    """
+
+    def cost(p): # wrapper for nelder mead compatability
+        return policy_cost(
+            obj_info=obj_info,
+            p=p,
+            theta0=theta0,
+            omega0=omega0,
+            initial_L=initial_L,
+            initial_anchor=initial_anchor,
+            T=T,
+            dt=dt,
+            anchors=anchors,
+            drag_params=drag_params,
+            y_ground=y_ground,
+            L_min=L_min,
+            L_max=L_max,
+            min_flight_time=min_flight_time
+        )
+
+    nm = NelderMead(
+        f=cost,
+        initial_point=np.asarray(initial_p, dtype=float),
+        tol=tol
+    )
+
+    final_simplex = nm()
+
+    best_p = final_simplex[0]
+    best_cost = nm.f_values[0]
+
+    optimal_params = PolicyParams(
+        theta_r=best_p[0],
+        L=best_p[1]
+    )
+
+    return optimal_params, best_cost
 
 if __name__ == '__main__': # test
     print(" ====== INTERNAL TESTING ======")
