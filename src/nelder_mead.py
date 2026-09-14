@@ -1,5 +1,6 @@
 import numpy as np
 from collections.abc import Callable
+from scipy import linalg as la
 
 # https://alexdowad.github.io/visualizing-nelder-mead/  - ref
 class NelderMead:
@@ -48,11 +49,11 @@ class NelderMead:
         return np.array(simplex)
 
     def order_vertices(self):
-        self.f_values = np.array([
+        self.f_values = np.array([ 
             self.f(vertex) for vertex in self.simplex
         ])
 
-        # get the indices for sorting in asc order
+        # get the indices for sorting in asc order - best to worse here cz the lowest val is the best
         order = np.argsort(self.f_values)
 
         # sort f vals and simplex
@@ -102,19 +103,70 @@ class NelderMead:
 
         return v_C, f_C
 
-    def _shrink(self):
+    def _shrink(self, new_simplex):
         """
             Shrink the whole triangle towards the best point, maintaining its angles.
         """
         best_point = self.simplex[0].copy()
-        new_simplex = [i + self.sigma * (best_point - i) for i in self.simplex]
+        new_simplex = [i + self.sigma * (best_point - i) for i in new_simplex]
 
-        self.simplex = np.array(new_simplex)
+        return np.array(new_simplex)
 
     def __call__(self):
-        # main algorithm 
-        pass
-        
+        # main algorithm
+
+        while True:
+            # order simplex
+            self.order_vertices()
+
+            new_simplex = self.simplex.copy()
+            # awlays reflect
+            v_R, f_R = self._reflect()
+
+            # comparison of f_R
+
+            # 1 - great: expand
+            if f_R < self.f_values[0]:
+                v_E, f_E = self._expand(v_R)
+
+                if f_E < f_R:
+                    new_simplex[-1] = v_E # replace worst with expanded
+                else:
+                    new_simplex[-1] = v_R # replace worst with reflected
+
+            # 2- good but not great
+            elif self.f_values[0] <= f_R < self.f_values[-2]:
+                new_simplex[-1] = v_R # replace worst with reflected
+
+            # 3- bad but not that bad
+            elif f_R < self.f_values[-1]:
+                contract_type = "co" # contract outside
+                v_C, f_C = self._contract(contract_type)
+
+                if f_C < f_R:
+                    new_simplex[-1] = v_C # replace worst with contracted
+                else:
+                    new_simplex = self._shrink(new_simplex)
+
+            # 4- terrible
+            else:
+                contract_type = "ci" # contract inside
+                v_C, f_C = self._contract(contract_type)
+
+                if f_C < self.f_values[-1]:
+                    new_simplex[-1] = v_C # replace worst with contracted
+                else:
+                    new_simplex = self._shrink(new_simplex)
+
+            # check convergence
+            if (la.norm(new_simplex - self.simplex, 2) < self.tol):
+                self.simplex = new_simplex
+                break
+
+            self.simplex = new_simplex
+
+        self.order_vertices() # final reordering
+        return self.simplex # final best minimsed params are self.simplex[0]
 
 if __name__ == '__main__':
     # generic test
@@ -154,9 +206,9 @@ if __name__ == '__main__':
     print("f(contracted outside):", fc)
 
     print()
-    n._shrink()
+    simplex = n._shrink(n.simplex.copy())
     print("centroid:", n.centroid)
-    print("shrinked simplex:\n", n.simplex)
+    print("shrinked simplex:\n",simplex)
 
     
 
