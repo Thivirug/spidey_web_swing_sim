@@ -1,5 +1,10 @@
 import numpy as np
 from typing import Optional
+import time
+import logging
+log = logging.getLogger(__name__)
+from colorama import Fore, Style, init
+init(autoreset=True)
 
 from .controller import PolicyParams
 from .simulation import simv3
@@ -141,10 +146,27 @@ def optim_policy_robust(initial_p, obj_info, scenarios: list[dict], std_weight=0
         - best_cost - robust aggregate cost across scenarios
     """
 
-    def robust_cost(p): # wrapper for nelder mead compatability
-        costs = []
+    t_start = time.perf_counter()
+    eval_count=0 # count how many times nelder evals the cost obj
 
-        for scenario_params in scenarios:
+    def robust_cost(p): # wrapper for nelder mead compatability
+        nonlocal eval_count
+        eval_count += 1
+        eval_start = time.perf_counter()
+
+        costs = []
+        n_scenarios = len(scenarios)
+
+        # print(
+        #     f"\n[Evaluation {eval_count}] "
+        #     f"theta={np.degrees(p[0]):.2f} deg | "
+        #     f"L={p[1]:.3f} m",
+        #     flush=True
+        # )
+
+        for i, scenario_params in enumerate(scenarios,start=1):
+            sim_start = time.perf_counter()
+
             cost = policy_cost( # cost for the particualr scenario
                 obj_info=obj_info,
                 p=p,
@@ -153,9 +175,48 @@ def optim_policy_robust(initial_p, obj_info, scenarios: list[dict], std_weight=0
 
             costs.append(cost)
 
-        costs = np.array(costs)
+            sim_elapsed = time.perf_counter() - sim_start
 
-        return np.mean(costs) + std_weight*np.std(costs)
+            print(
+                Fore.CYAN + 
+                f"  Scenario {i}/{n_scenarios} "
+                f"| Cost: {cost:.4f} "
+                f"| Time: {sim_elapsed:.2f}s",
+                flush=True
+            )
+
+        costs = np.array(costs)
+        mean_cost = np.mean(costs)
+        std_cost = np.std(costs)
+
+        result = np.mean(costs) + std_weight*np.std(costs)
+
+        eval_elapsed = time.perf_counter() - eval_start
+        total_elapsed = time.perf_counter() - t_start
+
+        print(
+            Fore.GREEN + Style.BRIGHT +
+            f"[Evaluation {eval_count} completed] "
+            f"Cost: {result:.6f} | "
+            f"Evaluation time: {eval_elapsed:.2f}s | "
+            f"Total elapsed: {total_elapsed:.1f}s",
+            flush=True
+        )
+
+        log.info(
+            "Evaluation=%d | theta=%.3f deg | L=%.3f m | "
+            "mean=%.6f | std=%.6f | robust=%.6f | "
+            "time=%.2fs",
+            eval_count,
+            np.degrees(p[0]),
+            p[1],
+            mean_cost,
+            std_cost,
+            result,
+            eval_elapsed
+        )
+
+        return result
 
     # run nelder mead with the new cost func
     nm = NelderMead(
@@ -172,6 +233,20 @@ def optim_policy_robust(initial_p, obj_info, scenarios: list[dict], std_weight=0
     optimal_params = PolicyParams(
         theta_r=best_p[0],
         L=best_p[1]
+    )
+
+    t_total = time.perf_counter() - t_start
+
+    print("\n========== OPTIMISATION COMPLETE ==========")
+    log.info(
+        "Optimisation finished | evaluations=%d | "
+        "theta=%.3f deg | L=%.3f m | "
+        "best_cost=%.6f | total_time=%.2fs",
+        eval_count,
+        np.degrees(best_p[0]),
+        best_p[1],
+        best_cost,
+        t_total
     )
 
     return optimal_params, best_cost

@@ -1,6 +1,9 @@
 import numpy as np
 from collections.abc import Callable
 from scipy import linalg as la
+import time
+import logging
+log = logging.getLogger(__name__)
 
 # https://alexdowad.github.io/visualizing-nelder-mead/  - ref
 class NelderMead:
@@ -49,7 +52,7 @@ class NelderMead:
         return np.array(simplex)
 
     def order_vertices(self):
-        self.f_values = np.array([ 
+        self.f_values = np.array([  # save the func values to avoid recalcs
             self.f(vertex) for vertex in self.simplex
         ])
 
@@ -114,10 +117,22 @@ class NelderMead:
 
     def __call__(self):
         # main algorithm
+        t_start = time.perf_counter()
+
+        i = 1 #to log iters
 
         while True:
             # order simplex
             self.order_vertices()
+
+            if i % 10 == 0:
+                log.info(
+                    "NM iteration=%d | best_cost=%.6f | "
+                    "elapsed=%.2fs",
+                    i,
+                    self.f_values[0],
+                    time.perf_counter() - t_start
+                )
 
             new_simplex = self.simplex.copy()
             # awlays reflect
@@ -164,6 +179,7 @@ class NelderMead:
                 break
 
             self.simplex = new_simplex
+            i += 1
 
         self.order_vertices() # final reordering
         return self.simplex # final best minimsed params are self.simplex[0]
