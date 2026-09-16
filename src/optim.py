@@ -41,6 +41,14 @@ def policy_cost(
         )
     
     theta_r, pref_L = p
+
+    # discourage invalid param values with a huge penalty cost
+    if not (
+        np.radians(0) <= theta_r <= np.radians(90) # close to 90 deg aint a good release for spidey
+        and L_min <= pref_L <= L_max
+    ):
+        return 1e5 
+
     params = PolicyParams(theta_r, pref_L)
 
     modes = simv3(
