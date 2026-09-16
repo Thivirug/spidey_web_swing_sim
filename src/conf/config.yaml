@@ -1,0 +1,27 @@
+defaults:
+  - scenarios: default
+  - _self_
+
+optim:
+  initial_theta_r_deg: 30.0 # make sure this is converted to rads
+  initial_preferred_L: 12.0
+
+  tol: 1e-4
+  std_weight: 0.25
+
+  objective:
+    version: v2
+
+    args: # TODO: scale values with proper ones after testing
+      w_dist: 0.8
+      w_vel: 0.7
+      dist_scale: 50.0 
+      vel_scale: 10.0
+      failure_penalty: 0.0
+
+hydra:
+  run:
+    dir: output/sims/${now:%Y-%m-%d_%H-%M-%S}
+
+  job:
+    chdir: false
