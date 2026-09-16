@@ -1,6 +1,14 @@
 import numpy as np
 import hydra
 from omegaconf import DictConfig, OmegaConf
+from pathlib import Path
+from hydra.core.hydra_config import HydraConfig
+
+from .plot import (
+    plot_convergence,
+    evaluate_scenarios,
+    plot_scenario_scores
+)
 
 from .optim import optim_policy_robust
 
@@ -48,7 +56,7 @@ def main(cfg: DictConfig):
         scenarios.append(params)
 
     # optim - run nelder mead 
-    optim_params, best_cost = optim_policy_robust(
+    optim_params, best_cost, history = optim_policy_robust(
         initial_p=init_p,
         obj_info=obj_info,
         scenarios=scenarios,
@@ -59,6 +67,27 @@ def main(cfg: DictConfig):
     print("Optimal release angle:", np.degrees(optim_params.theta_r))
     print("Optimal preferred L:", optim_params.L)
     print("Best robust cost:", best_cost)
+
+    output_dir = (
+        Path(HydraConfig.get().runtime.output_dir)
+        / "figures"
+    )
+
+    plot_convergence(
+        history,
+        output_dir
+    )
+
+    scores = evaluate_scenarios(
+        optim_params,
+        obj_info,
+        scenarios
+    )
+
+    plot_scenario_scores(
+        scores,
+        output_dir
+    )
 
 if __name__ == "__main__":
     main()

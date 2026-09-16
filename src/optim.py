@@ -157,6 +157,8 @@ def optim_policy_robust(initial_p, obj_info, scenarios: list[dict], std_weight=0
     t_start = time.perf_counter()
     eval_count=0 # count how many times nelder evals the cost obj
 
+    history = [] # data for plotting
+
     def robust_cost(p): # wrapper for nelder mead compatability
         nonlocal eval_count
         eval_count += 1
@@ -224,6 +226,16 @@ def optim_policy_robust(initial_p, obj_info, scenarios: list[dict], std_weight=0
             eval_elapsed
         )
 
+        history.append({
+            "evaluation": eval_count,
+            "theta_r": p[0],
+            "preferred_L": p[1],
+            "mean_cost": mean_cost,
+            "std_cost": std_cost,
+            "robust_cost": result,
+            "elapsed": time.perf_counter() - t_start
+        })
+
         return result
 
     # run nelder mead with the new cost func
@@ -257,7 +269,7 @@ def optim_policy_robust(initial_p, obj_info, scenarios: list[dict], std_weight=0
         t_total
     )
 
-    return optimal_params, best_cost
+    return optimal_params, best_cost, history
 
 if __name__ == '__main__': # test for policy_cost
     print(" ====== INTERNAL TESTING ======")
