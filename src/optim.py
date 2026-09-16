@@ -69,6 +69,8 @@ def policy_cost(
 
     return -score # since we optimise a maximisation, but the algo is a minimiser
 
+
+# MAIN optimising policies
 def optimise_policy(
     initial_p,
     obj_info,
@@ -128,7 +130,53 @@ def optimise_policy(
 
     return optimal_params, best_cost
 
-if __name__ == '__main__': # test
+def optim_policy_robust(initial_p, obj_info, scenarios: list[dict], std_weight=0.25, tol=1e-6):
+    """
+        Optimise one reusable policy across multiple scenarios.
+
+        - scenarios: list of dicts of param values for all defined scenarios
+
+        Return
+        - optimal_params - Robust controller parameters.
+        - best_cost - robust aggregate cost across scenarios
+    """
+
+    def robust_cost(p): # wrapper for nelder mead compatability
+        costs = []
+
+        for scenario_params in scenarios:
+            cost = policy_cost( # cost for the particualr scenario
+                obj_info=obj_info,
+                p=p,
+                **scenario_params
+            )
+
+            costs.append(cost)
+
+        costs = np.array(costs)
+
+        return np.mean(costs) + std_weight*np.std(costs)
+
+    # run nelder mead with the new cost func
+    nm = NelderMead(
+        f=robust_cost,
+        initial_point=np.asarray(initial_p, dtype=float),
+        tol=tol
+    )
+
+    final_simplex = nm()
+
+    best_p = final_simplex[0]
+    best_cost = nm.f_values[0]
+
+    optimal_params = PolicyParams(
+        theta_r=best_p[0],
+        L=best_p[1]
+    )
+
+    return optimal_params, best_cost
+
+if __name__ == '__main__': # test for policy_cost
     print(" ====== INTERNAL TESTING ======")
 
     anchors = [

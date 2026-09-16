@@ -5,7 +5,6 @@ from .simulation import simv3
 
 
 def main():
-
     # 1- Fixed simulation setup
 
     theta0 = np.radians(-30.0)
@@ -42,7 +41,6 @@ def main():
 
 
     # 2- Initial guess for controller parameters
-    #
     # p = [theta_r, preferred_L]
 
     initial_p = np.array([
