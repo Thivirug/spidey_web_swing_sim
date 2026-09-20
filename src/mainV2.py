@@ -109,5 +109,80 @@ def main(cfg: DictConfig):
     )
 
 
+    # ==========================================================
+    # INDEPENDENT TEST: Optimised policy under NEW conditions
+    # ==========================================================
+
+    print("\n========== INDEPENDENT TEST ==========")
+
+    test_params = common_params.copy()
+
+    # Change simulation conditions independently of optimisation
+    test_params.update({
+        "theta0": np.radians(-45.0),
+        "omega0": 1.2,
+        "initial_L": 10.0,
+        "initial_anchor": (0.0, 22.0),
+
+        # Longer simulation
+        "T": 50.0,
+
+        # Independent city layout: different from the config the controller was optimised for
+        "anchors": [
+            (8.0, 25.0),
+            (13.0, 20.0),
+            (19.0, 28.0),
+            (24.0, 23.0),
+            (31.0, 30.0),
+            (39.0, 22.0),
+            (44.0, 27.0),
+            (50.0, 19.0),
+            (57.0, 26.0),
+            (64.0, 31.0),
+            (70.0, 23.0),
+            (77.0, 28.0),
+            (85.0, 20.0),
+            (91.0, 26.0),
+            (98.0, 32.0),
+            (105.0, 24.0),
+            (113.0, 29.0),
+            (120.0, 21.0),
+            (128.0, 27.0),
+            (135.0, 33.0),
+            (143.0, 25.0),
+            (150.0, 30.0),
+            (158.0, 22.0),
+            (166.0, 28.0),
+        ],
+    })
+
+    # Run once with the already-optimised controller.
+    test_scores, test_diagnostics = evaluate_scenarios(
+        optimal_params=optim_params,
+        obj_info=obj_info,
+        scenarios=[test_params],
+        scenario_names=["independent_test"]
+    )
+
+    # Save test outputs separately
+    test_output_dir = (
+        Path(HydraConfig.get().runtime.output_dir)
+        / "independent_test"
+    )
+
+    plot_scenario_scores(
+        test_scores,
+        test_output_dir
+    )
+
+    test_csv_path = export_scenario_diagnostics(
+        test_diagnostics,
+        test_output_dir
+    )
+
+    print_scenario_summary(test_diagnostics)
+
+    print(f"Independent test saved to: {test_csv_path}")
+
 if __name__ == "__main__":
     main()
