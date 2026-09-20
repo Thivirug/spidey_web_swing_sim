@@ -187,8 +187,24 @@ def main(cfg: DictConfig):
 
     print(f"Independent test saved to: {test_csv_path}")
 
-    print("\n========== EVENT HISTORY ==========")
+    test_result = simv3(
+        theta0=test_params["theta0"],
+        omega0=test_params["omega0"],
+        L=test_params["initial_L"],
+        anchor=test_params["initial_anchor"],
+        policy_params=optim_params,
+        T=test_params["T"],
+        dt=test_params["dt"],
+        y_ground=test_params["y_ground"],
+        drag_params=test_params["drag_params"],
+        anchors=test_params["anchors"],
+        L_min=test_params["L_min"],
+        L_max=test_params["L_max"],
+        min_flight_time=test_params["min_flight_time"]
+    )
 
+    print("\n========== EVENT HISTORY ==========")
+    
     for i, mode in enumerate(test_result.modes, start=1):
 
         print(
@@ -215,22 +231,6 @@ def main(cfg: DictConfig):
                 f"to "
                 f"{np.degrees(max(theta_values)):.2f}°"
             )
-
-    test_result = simv3(
-        theta0=test_params["theta0"],
-        omega0=test_params["omega0"],
-        L=test_params["initial_L"],
-        anchor=test_params["initial_anchor"],
-        policy_params=optim_params,
-        T=test_params["T"],
-        dt=test_params["dt"],
-        y_ground=test_params["y_ground"],
-        drag_params=test_params["drag_params"],
-        anchors=test_params["anchors"],
-        L_min=test_params["L_min"],
-        L_max=test_params["L_max"],
-        min_flight_time=test_params["min_flight_time"]
-    )
 
     plot_trajectory_history(
         test_result,
