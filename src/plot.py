@@ -84,6 +84,7 @@ def plot_convergence(history, output_dir):
     )
 
     plt.xlabel("Objective evaluation")
+    plt.xticks(rotation=90)
     plt.ylabel("Robust cost")
     plt.title("Nelder-Mead Optimisation Convergence")
 
