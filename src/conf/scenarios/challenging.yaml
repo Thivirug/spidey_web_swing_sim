@@ -1,0 +1,220 @@
+# @package _global_
+# stress test: a different shared environment and a diverse set of
+# initial conditions. 
+
+simulation:
+  T: 25.0
+  dt: 0.01
+  y_ground: 0.0
+  L_min: 5.0
+  L_max: 15.0
+  min_flight_time: 0.25
+  drag_params: null  
+
+  # Unlike default.yaml's near-uniform, dense anchors, these include
+  # sparse gaps, close clusters, and height shifts. All are forward candidates.
+  anchors:
+    - [9.0, 22.0]
+    - [14.0, 17.8]
+    - [18.0, 25.5]
+    - [29.0, 21.0]   # 11 m gap
+    - [34.0, 27.0]
+    - [37.5, 19.0]   # tight cluster and sharp height change
+    - [48.0, 23.5]   # 10.5 m gap
+    - [53.0, 16.5]
+    - [58.0, 24.0]
+    - [70.0, 20.5]   # 12 m gap
+    - [74.0, 27.5]
+    - [79.0, 18.5]
+    - [89.0, 25.0]   # 10 m gap
+    - [94.0, 17.0]
+    - [99.0, 23.0]
+    - [111.0, 26.0]  # 12 m gap
+    - [116.0, 19.0]
+    - [121.0, 24.5]
+
+scenarios:
+  # Low momentum / delayed forward motion
+  - name: low_momentum_01
+    theta0_deg: -55.0
+    omega0: 0.15
+    initial_L: 10.0
+    initial_anchor: [0.0, 22.0]
+
+  - name: low_momentum_02
+    theta0_deg: -65.0
+    omega0: 0.35
+    initial_L: 12.5
+    initial_anchor: [0.0, 25.0]
+
+  - name: near_rest_start
+    theta0_deg: -42.0
+    omega0: 0.05
+    initial_L: 9.0
+    initial_anchor: [-2.0, 21.0]
+
+  # High-speed / aggressive launch (stress missed-anchor and ground handling)
+  - name: high_momentum_01
+    theta0_deg: -18.0
+    omega0: 1.8
+    initial_L: 8.0
+    initial_anchor: [0.0, 22.0]
+
+  - name: high_momentum_02
+    theta0_deg: -35.0
+    omega0: 2.0
+    initial_L: 12.0
+    initial_anchor: [-1.0, 24.0]
+
+  - name: high_momentum_short_web
+    theta0_deg: -12.0
+    omega0: 2.2
+    initial_L: 6.0
+    initial_anchor: [0.0, 20.0]
+
+  # Short versus long initial webs
+  - name: short_web_low_anchor
+    theta0_deg: -58.0
+    omega0: 0.65
+    initial_L: 5.5
+    initial_anchor: [0.0, 16.0]
+
+  - name: long_web_low_clearance
+    theta0_deg: -48.0
+    omega0: 0.85
+    initial_L: 14.5
+    initial_anchor: [0.0, 16.0]
+
+  - name: long_web_high_anchor
+    theta0_deg: -25.0
+    omega0: 1.35
+    initial_L: 14.5
+    initial_anchor: [0.0, 28.0]
+
+  # Challenging initial anchor offsets / heights
+  - name: rear_offset
+    theta0_deg: -30.0
+    omega0: 1.1
+    initial_L: 10.0
+    initial_anchor: [-6.0, 20.0]
+
+  - name: forward_offset
+    theta0_deg: -38.0
+    omega0: 0.9
+    initial_L: 11.0
+    initial_anchor: [4.0, 23.0]
+
+  - name: low_anchor
+    theta0_deg: -28.0
+    omega0: 1.25
+    initial_L: 10.5
+    initial_anchor: [0.0, 14.5]
+
+  - name: high_anchor
+    theta0_deg: -52.0
+    omega0: 0.55
+    initial_L: 11.0
+    initial_anchor: [0.0, 30.0]
+
+  # Coupled perturbations: not simply one-at-a-time changes
+  - name: coupled_slow_sparse
+    theta0_deg: -62.0
+    omega0: 0.25
+    initial_L: 13.5
+    initial_anchor: [-4.0, 18.0]
+
+  - name: coupled_fast_low
+    theta0_deg: -20.0
+    omega0: 1.9
+    initial_L: 13.0
+    initial_anchor: [2.0, 16.0]
+
+  - name: coupled_fast_short
+    theta0_deg: -48.0
+    omega0: 1.75
+    initial_L: 6.5
+    initial_anchor: [-3.0, 26.0]
+
+  # Group 1: Near-stall conditions
+
+  - name: near_stall_01
+    theta0_deg: -60.0
+    omega0: 0.02
+    initial_L: 13.5
+    initial_anchor: [0.0, 20.0]
+
+  - name: near_stall_02
+    theta0_deg: -15.0
+    omega0: 0.05
+    initial_L: 14.0
+    initial_anchor: [-3.0, 21.0]
+
+  # Group 2: Extreme initial momentum
+
+  - name: high_momentum_01
+    theta0_deg: -55.0
+    omega0: 2.5
+    initial_L: 10.0
+    initial_anchor: [0.0, 22.0]
+
+  - name: high_momentum_02
+    theta0_deg: -20.0
+    omega0: 2.8
+    initial_L: 12.5
+    initial_anchor: [2.0, 24.0]
+
+  # Group 3: Web-length extremes
+
+  - name: short_web_extreme
+    theta0_deg: -45.0
+    omega0: 1.8
+    initial_L: 5.1
+    initial_anchor: [0.0, 18.0]
+
+  - name: long_web_extreme
+    theta0_deg: -50.0
+    omega0: 0.4
+    initial_L: 14.9
+    initial_anchor: [-2.0, 19.0]
+
+  # Group 4: Low-altitude conditions
+
+  - name: low_altitude_01
+    theta0_deg: -25.0
+    omega0: 0.8
+    initial_L: 12.0
+    initial_anchor: [1.0, 14.0]
+
+  - name: low_altitude_02
+    theta0_deg: -55.0
+    omega0: 1.5
+    initial_L: 14.0
+    initial_anchor: [-3.0, 16.0]
+
+  # Group 5: Reverse initial momentum
+
+  - name: reverse_motion_01
+    theta0_deg: -40.0
+    omega0: -0.3
+    initial_L: 10.0
+    initial_anchor: [0.0, 21.0]
+
+  - name: reverse_motion_02
+    theta0_deg: -60.0
+    omega0: -0.8
+    initial_L: 12.0
+    initial_anchor: [-2.0, 23.0]
+
+  # Group 6: Combined extreme conditions
+
+  - name: extreme_combined_01
+    theta0_deg: -65.0
+    omega0: 2.4
+    initial_L: 14.5
+    initial_anchor: [-4.0, 18.0]
+
+  - name: extreme_combined_02
+    theta0_deg: -10.0
+    omega0: 0.1
+    initial_L: 5.5
+    initial_anchor: [3.0, 17.0]
