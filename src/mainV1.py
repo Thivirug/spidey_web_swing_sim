@@ -3,7 +3,8 @@ import numpy as np
 from .optim import optimise_policy
 from .simulation import simv3
 
-
+# this file is jsut testing if simulation runs as intended alongwith offline nelder mead for a fixed single scenario.
+# mainV2 runs offline optims with a cost func running multiple scenarios 
 def main():
     # 1- Fixed simulation setup
 
@@ -173,7 +174,7 @@ def main():
     # NOTE: Nelder-Mead is finished before this simulation starts.
     # This simulation uses the fixed optimal parameters.
 
-    final_modes = simv3(
+    sim_res = simv3(
         theta0=theta0,
         omega0=omega0,
         L=initial_L,
@@ -210,15 +211,8 @@ def main():
 
     print(
         "Number of trajectory modes:",
-        len(final_modes)
+        len(sim_res.modes)
     )
-
-
-    # 8. Plot / animate final_modes 
-
-    # plot_simulation(final_modes, anchors)
-    # animate_simulation(final_modes, anchors)
-
 
 if __name__ == "__main__":
     main()

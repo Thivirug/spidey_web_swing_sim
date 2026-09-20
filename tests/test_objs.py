@@ -1,11 +1,12 @@
-import numpy as np
-import pytest
 import sys
 from pathlib import Path
 
+import numpy as np
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.events import WebAttachedEvent, ReleasedEvent
+from src.events import *
 from src.objectives import (
     event_state_to_cartesian,
     get_initial_cartesian_state,
@@ -14,58 +15,43 @@ from src.objectives import (
     objv2,
 )
 
+
+def released(t, state):
+    event = ReleasedEvent(start_time=t)
+    event.states.append((t, np.array(state, dtype=float)))
+    return event
+
+
+def attached(t, anchor, length, state):
+    event = WebAttachedEvent(start_time=t, anchor=anchor, L=length)
+    event.states.append((t, np.array(state, dtype=float)))
+    return event
+
+
+def sim_result(modes, reason="time_limit"):
+    return FinalSimResult(modes=modes, termination_reason=reason)
+
+
+@pytest.fixture
+def sample_modes():
+    return [
+        released(0.0, [5.0, 10.0, 2.0, 0.0]),
+        released(2.0, [25.0, 8.0, 6.0, -1.0]),
+    ]
+
+
 def test_event_state_to_cartesian_released():
     event = ReleasedEvent(start_time=0.0)
-
-    state = np.array([
-        10.0,
-        20.0,
-        5.0,
-        -2.0
-    ])
-
-    result = event_state_to_cartesian(
-        event,
-        state
-    )
-
-    np.testing.assert_allclose(
-        result,
-        state
-    )
-
-    # make sure a copy was returned
+    state = np.array([10.0, 20.0, 5.0, -2.0])
+    result = event_state_to_cartesian(event, state)
+    np.testing.assert_allclose(result, state)
     assert result is not state
 
 
 def test_event_state_to_cartesian_attached():
-    event = WebAttachedEvent(
-        start_time=0.0,
-        anchor=(0.0, 20.0),
-        L=10.0
-    )
-
-    state = np.array([
-        0.0,   # theta
-        1.0    # omega
-    ])
-
-    result = event_state_to_cartesian(
-        event,
-        state
-    )
-
-    expected = np.array([
-        0.0,   # x
-        10.0,  # y
-        10.0,  # vx
-        0.0    # vy
-    ])
-
-    np.testing.assert_allclose(
-        result,
-        expected
-    )
+    event = WebAttachedEvent(start_time=0.0, anchor=(0.0, 20.0), L=10.0)
+    result = event_state_to_cartesian(event, np.array([0.0, 1.0]))
+    np.testing.assert_allclose(result, [0.0, 10.0, 10.0, 0.0])
 
 
 def test_event_state_to_cartesian_invalid_type():
@@ -73,408 +59,120 @@ def test_event_state_to_cartesian_invalid_type():
         pass
 
     with pytest.raises(TypeError):
-        event_state_to_cartesian(
-            DummyEvent(),
-            np.array([1.0])
-        )
+        event_state_to_cartesian(DummyEvent(), np.array([1.0]))
 
 
 def test_get_initial_cartesian_state_attached():
-    event = WebAttachedEvent(
-        start_time=0.0,
-        anchor=(0.0, 20.0),
-        L=10.0
-    )
-
-    event.states.append(
-        (
-            0.0,
-            np.array([
-                0.0,
-                1.0
-            ])
-        )
-    )
-
-    result = get_initial_cartesian_state(
-        [event]
-    )
-
-    expected = np.array([
-        0.0,
-        10.0,
-        10.0,
-        0.0
-    ])
-
+    modes = [attached(0.0, (0.0, 20.0), 10.0, [0.0, 1.0])]
     np.testing.assert_allclose(
-        result,
-        expected
+        get_initial_cartesian_state(modes), [0.0, 10.0, 10.0, 0.0]
     )
 
 
 def test_get_initial_cartesian_state_released():
-    event = ReleasedEvent(
-        start_time=0.0
-    )
-
-    state = np.array([
-        5.0,
-        10.0,
-        3.0,
-        2.0
-    ])
-
-    event.states.append(
-        (0.0, state)
-    )
-
-    result = get_initial_cartesian_state(
-        [event]
-    )
-
+    modes = [released(0.0, [5.0, 10.0, 3.0, 2.0])]
     np.testing.assert_allclose(
-        result,
-        state
+        get_initial_cartesian_state(modes), [5.0, 10.0, 3.0, 2.0]
     )
 
 
 def test_get_final_cartesian_state_attached():
-    event = WebAttachedEvent(
-        start_time=0.0,
-        anchor=(20.0, 20.0),
-        L=10.0
-    )
-
-    event.states.append(
-        (
-            1.0,
-            np.array([
-                0.0,
-                0.5
-            ])
-        )
-    )
-
-    result = get_final_cartesian_state(
-        [event]
-    )
-
-    expected = np.array([
-        20.0,
-        10.0,
-        5.0,
-        0.0
-    ])
-
+    modes = [attached(1.0, (20.0, 20.0), 10.0, [0.0, 0.5])]
     np.testing.assert_allclose(
-        result,
-        expected
+        get_final_cartesian_state(modes), [20.0, 10.0, 5.0, 0.0]
     )
 
 
 def test_get_final_cartesian_state_released():
-    event = ReleasedEvent(
-        start_time=0.0
-    )
-
-    state = np.array([
-        25.0,
-        8.0,
-        6.0,
-        -1.0
-    ])
-
-    event.states.append(
-        (1.0, state)
-    )
-
-    result = get_final_cartesian_state(
-        [event]
-    )
-
+    modes = [released(1.0, [25.0, 8.0, 6.0, -1.0])]
     np.testing.assert_allclose(
-        result,
-        state
+        get_final_cartesian_state(modes), [25.0, 8.0, 6.0, -1.0]
     )
 
 
-def test_get_initial_state_empty_modes():
-    with pytest.raises(
-        ValueError,
-        match="Simulation returned no events"
-    ):
-        get_initial_cartesian_state([])
+@pytest.mark.parametrize("extractor", [get_initial_cartesian_state, get_final_cartesian_state])
+def test_state_extractor_empty_modes(extractor):
+    with pytest.raises(ValueError, match="Simulation returned no events"):
+        extractor([])
 
 
-def test_get_final_state_empty_modes():
-    with pytest.raises(
-        ValueError,
-        match="Simulation returned no events"
-    ):
-        get_final_cartesian_state([])
-
-
-def test_get_initial_state_empty_event():
-    event = ReleasedEvent(
-        start_time=0.0
-    )
-
-    with pytest.raises(
-        ValueError,
-        match="has no states"
-    ):
-        get_initial_cartesian_state(
-            [event]
-        )
-
-
-def test_get_final_state_empty_event():
-    event = ReleasedEvent(
-        start_time=0.0
-    )
-
-    with pytest.raises(
-        ValueError,
-        match="has no states"
-    ):
-        get_final_cartesian_state(
-            [event]
-        )
+@pytest.mark.parametrize("extractor", [get_initial_cartesian_state, get_final_cartesian_state])
+def test_state_extractor_empty_event(extractor):
+    with pytest.raises(ValueError, match="has no states"):
+        extractor([ReleasedEvent(start_time=0.0)])
 
 
 def test_objv1_released_to_released():
-    initial = ReleasedEvent(
-        start_time=0.0
-    )
-
-    initial.states.append(
-        (
-            0.0,
-            np.array([
-                5.0,
-                10.0,
-                3.0,
-                0.0
-            ])
-        )
-    )
-
-    final = ReleasedEvent(
-        start_time=1.0
-    )
-
-    final.states.append(
-        (
-            2.0,
-            np.array([
-                25.0,
-                8.0,
-                6.0,
-                -1.0
-            ])
-        )
-    )
-
-    result = objv1(
-        [initial, final]
-    )
-
-    assert np.isclose(
-        result,
-        20.0
-    )
+    result = sim_result([
+        released(0.0, [5.0, 10.0, 3.0, 0.0]),
+        released(2.0, [25.0, 8.0, 6.0, -1.0]),
+    ])
+    assert np.isclose(objv1(result), 20.0)
 
 
 def test_objv1_attached_to_attached():
-    initial = WebAttachedEvent(
-        start_time=0.0,
-        anchor=(0.0, 20.0),
-        L=10.0
-    )
-
-    initial.states.append(
-        (
-            0.0,
-            np.array([
-                0.0,
-                0.0
-            ])
-        )
-    )
-
-    final = WebAttachedEvent(
-        start_time=1.0,
-        anchor=(20.0, 20.0),
-        L=10.0
-    )
-
-    final.states.append(
-        (
-            2.0,
-            np.array([
-                0.0,
-                0.0
-            ])
-        )
-    )
-
-    result = objv1(
-        [initial, final]
-    )
-
-    assert np.isclose(
-        result,
-        20.0
-    )
+    result = sim_result([
+        attached(0.0, (0.0, 20.0), 10.0, [0.0, 0.0]),
+        attached(2.0, (20.0, 20.0), 10.0, [0.0, 0.0]),
+    ])
+    assert np.isclose(objv1(result), 20.0)
 
 
 def test_objv1_attached_to_released():
-    initial = WebAttachedEvent(
-        start_time=0.0,
-        anchor=(0.0, 20.0),
-        L=10.0
-    )
-
-    initial.states.append(
-        (
-            0.0,
-            np.array([
-                0.0,
-                0.0
-            ])
-        )
-    )
-
-    final = ReleasedEvent(
-        start_time=1.0
-    )
-
-    final.states.append(
-        (
-            2.0,
-            np.array([
-                15.0,
-                8.0,
-                4.0,
-                -1.0
-            ])
-        )
-    )
-
-    result = objv1(
-        [initial, final]
-    )
-
-    assert np.isclose(
-        result,
-        15.0
-    )
+    result = sim_result([
+        attached(0.0, (0.0, 20.0), 10.0, [0.0, 0.0]),
+        released(2.0, [15.0, 8.0, 4.0, -1.0]),
+    ])
+    assert np.isclose(objv1(result), 15.0)
 
 
-def test_objv2():
-    initial = ReleasedEvent(
-        start_time=0.0
-    )
+def test_objv1_collision_still_reports_distance(sample_modes):
+    """A distance-only objective should not silently erase physical displacement."""
+    result = sim_result(sample_modes, "ground_collision")
+    assert np.isclose(objv1(result), 20.0)
 
-    initial.states.append(
-        (
-            0.0,
-            np.array([
-                5.0,
-                10.0,
-                2.0,
-                0.0
-            ])
-        )
-    )
 
-    final = ReleasedEvent(
-        start_time=1.0
-    )
+def test_objv1_reverse_displacement():
+    result = sim_result([
+        released(0.0, [15.0, 10.0, -1.0, 0.0]),
+        released(2.0, [5.0, 8.0, -2.0, -1.0]),
+    ])
+    assert np.isclose(objv1(result), -10.0)
 
-    final.states.append(
-        (
-            2.0,
-            np.array([
-                25.0,
-                8.0,
-                6.0,
-                -1.0
-            ])
-        )
-    )
 
+def test_objv2_time_limit_no_penalty(sample_modes):
+    result = sim_result(sample_modes, "time_limit")
     score = objv2(
-        [initial, final],
-        w_dist=0.7,
-        w_vel=0.3,
-        dist_scale=50.0,
-        vel_scale=10.0,
-        failure_penalty=0.2
+        result, w_dist=0.7, w_vel=0.3,
+        dist_scale=50.0, vel_scale=10.0, failure_penalty=0.2,
     )
-
-    # distance = 20
-    # normalised distance = 20 / 50 = 0.4
-    # normalised vx = 6 / 10 = 0.6
-    #
-    # score =
-    # 0.7 * 0.4
-    # + 0.3 * 0.6
-    # - 0.2
-    #
-    # = 0.26
-
-    expected = 0.26
-
-    assert np.isclose(
-        score,
-        expected
-    )
+    # 0.7*(20/50) + 0.3*(6/10) = 0.46
+    assert np.isclose(score, 0.46)
 
 
-def test_objv2_zero_failure_penalty():
-    initial = ReleasedEvent(
-        start_time=0.0
-    )
-
-    initial.states.append(
-        (
-            0.0,
-            np.array([
-                0.0,
-                10.0,
-                1.0,
-                0.0
-            ])
-        )
-    )
-
-    final = ReleasedEvent(
-        start_time=1.0
-    )
-
-    final.states.append(
-        (
-            1.0,
-            np.array([
-                50.0,
-                10.0,
-                10.0,
-                0.0
-            ])
-        )
-    )
-
+def test_objv2_ground_collision_penalty(sample_modes):
+    result = sim_result(sample_modes, "ground_collision")
     score = objv2(
-        [initial, final]
+        result, w_dist=0.7, w_vel=0.3,
+        dist_scale=50.0, vel_scale=10.0, failure_penalty=0.2,
     )
+    assert np.isclose(score, 0.26)
 
-    # distance / 50 = 1
-    # vx / 10 = 1
-    # 0.7 * 1 + 0.3 * 1 = 1
 
-    assert np.isclose(
-        score,
-        1.0
-    )
+def test_objv2_zero_failure_penalty(sample_modes):
+    result = sim_result(sample_modes, "ground_collision")
+    assert np.isclose(objv2(result, failure_penalty=0.0), 0.46)
+
+
+def test_objv2_collision_score_difference_equals_penalty(sample_modes):
+    penalty = 0.5
+    time_limit_score = objv2(sim_result(sample_modes, "time_limit"), failure_penalty=penalty)
+    collision_score = objv2(sim_result(sample_modes, "ground_collision"), failure_penalty=penalty)
+    assert np.isclose(time_limit_score - collision_score, penalty)
+    assert collision_score < time_limit_score
+
+
+def test_objv2_penalty_not_applied_twice(sample_modes):
+    result = sim_result(sample_modes, "ground_collision")
+    base_score = 0.7 * (20.0 / 50.0) + 0.3 * (6.0 / 10.0)
+    assert np.isclose(objv2(result, failure_penalty=1.0), base_score - 1.0)

@@ -220,6 +220,7 @@ def simv2(
 
     return modes
 
+################ This is the func used in the actual sim ################
 def simv3(
     theta0,
     omega0,
@@ -251,6 +252,7 @@ def simv3(
     ], dtype=float)
 
     modes = []
+    termination_reason = "time_limit" # default unless ground collision
 
     while t<=T:
         if isinstance(mode, WebAttachedEvent):
@@ -303,6 +305,7 @@ def simv3(
                     mode.end_time = t
 
                 modes.append(mode)
+                termination_reason = "ground_collision"
                 break
 
             # 2-check for reattachment if flight time greater than min req
@@ -348,7 +351,10 @@ def simv3(
         mode.end_time = T
         modes.append(mode)
 
-    return modes
+    return FinalSimResult(
+        modes=modes,
+        termination_reason=termination_reason
+    )
 
 if __name__ == '__main__':
     print("\n\t====== Simulation V1 ======\n")
@@ -426,7 +432,7 @@ if __name__ == '__main__':
             L=preferred_L
         )
 
-        modes = simv3(
+        sim_res = simv3(
             theta0=np.radians(-45),
             omega0=0.0,
             L=11.3,
@@ -442,7 +448,8 @@ if __name__ == '__main__':
 
         print(f"\n===== Preferred L = {preferred_L} =====")
 
-        for mode in modes:
+        print(f"Temrin. reason - {sim_res.termination_reason}")
+        for mode in sim_res.modes:
             if mode.name == "attached":
                 print(
                     "anchor =", mode.anchor,

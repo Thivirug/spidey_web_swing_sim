@@ -51,7 +51,7 @@ def policy_cost(
 
     params = PolicyParams(theta_r, pref_L)
 
-    modes = simv3(
+    result = simv3(
         theta0=theta0,
         omega0=omega0,
         L=initial_L,
@@ -68,13 +68,13 @@ def policy_cost(
     )
 
     if obj_info[0] == 'v1':
-        score = objv1(modes)
+        score = objv1(result)
     elif obj_info[0] == 'v2':
         if obj_info[1] is None:
-            score = objv2(modes)
+            score = objv2(result)
         else:
             score = objv2(
-                modes,
+                result,
                 **obj_info[1]
             )
     else:
