@@ -36,7 +36,7 @@ def simv1(
 
     modes = []
 
-    while t<=T:
+    while t<T:
         if isinstance(mode, WebAttachedEvent):
             mode.states.append(
                 (t, state.copy())
@@ -126,7 +126,7 @@ def simv2(
 
     modes = []
 
-    while t<=T:
+    while t<T:
         if isinstance(mode, WebAttachedEvent):
             mode.states.append(
                 (t, state.copy())
@@ -254,7 +254,7 @@ def simv3(
     modes = []
     termination_reason = "time_limit" # default unless ground collision
 
-    while t<=T:
+    while t<T:
         if isinstance(mode, WebAttachedEvent):
             mode.states.append(
                 (t, state.copy())
@@ -346,8 +346,11 @@ def simv3(
 
         t += dt
 
-    # handle the case where spidey never lands be4 T and the case where he never releases bef T
-    if mode not in modes:
+    # Finalise the active mode only if the simulation reached the time limit.
+    # For ground collisions, the collision handler has already appended the final mode and recorded the
+    # interpolated landing time.
+
+    if termination_reason == "time_limit":
         mode.end_time = T
         modes.append(mode)
 

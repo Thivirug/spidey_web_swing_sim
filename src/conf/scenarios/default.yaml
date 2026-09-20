@@ -1,7 +1,7 @@
 # @package _global_
 
 simulation:
-  T: 20.0
+  T: 20.0 # NOTE: T need to be a multiple of dt for the while loop in sim to work properly
   dt: 0.01
 
   y_ground: 0.0

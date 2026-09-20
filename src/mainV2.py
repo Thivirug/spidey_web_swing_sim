@@ -7,7 +7,9 @@ from hydra.core.hydra_config import HydraConfig
 from .plot import (
     plot_convergence,
     evaluate_scenarios,
-    plot_scenario_scores
+    plot_scenario_scores,
+    export_scenario_diagnostics,
+    print_scenario_summary
 )
 
 from .optim import optim_policy_robust
@@ -42,6 +44,8 @@ def main(cfg: DictConfig):
 
     # build scenario params
     scenarios = []
+    # preserve YAML scenario names
+    scenario_names = []
 
     for s in cfg.scenarios:
         params = common_params.copy()
@@ -78,16 +82,31 @@ def main(cfg: DictConfig):
         output_dir
     )
 
-    scores = evaluate_scenarios(
+    scores, diagnostics = evaluate_scenarios(
         optim_params,
         obj_info,
-        scenarios
+        scenarios,
+        scenario_names=scenario_names
     )
 
     plot_scenario_scores(
         scores,
         output_dir
     )
+
+    csv_path = export_scenario_diagnostics(
+        diagnostics,
+        output_dir
+    )
+
+    print_scenario_summary(
+        diagnostics
+    )
+
+    print(
+        f"Scenario diagnostics saved to: {csv_path}"
+    )
+
 
 if __name__ == "__main__":
     main()
