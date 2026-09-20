@@ -9,7 +9,8 @@ from .objectives import (
     objv1,
     objv2,
     get_initial_cartesian_state,
-    get_final_cartesian_state
+    get_final_cartesian_state,
+    event_state_to_cartesian
 )
 
 from .simulation import simv3
@@ -400,6 +401,83 @@ def print_scenario_summary(diagnostics):
     )
 
     print("======================================\n")
+
+def plot_trajectory_history(sim_result, output_dir):
+    """
+        Plot x(t), y(t), and the 2D trajectory from recorded events
+    """
+
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    times = []
+    xs = []
+    ys = []
+
+    for mode in sim_result.modes:
+        for t, state in mode.states:
+            cart = event_state_to_cartesian(mode, state)
+
+            times.append(t)
+            xs.append(cart[0])
+            ys.append(cart[1])
+
+    if not times:
+        raise ValueError("No trajectory states were recorded.")
+
+    times = np.asarray(times)
+    xs = np.asarray(xs)
+    ys = np.asarray(ys)
+
+    # Ensure chronological order.
+    order = np.argsort(times, kind="stable")
+    times = times[order]
+    xs = xs[order]
+    ys = ys[order]
+
+    # Position versus time
+    fig, axes = plt.subplots(2, 1, figsize=(10, 7), sharex=True)
+
+    axes[0].plot(times, xs)
+    axes[0].set_ylabel("Horizontal position x (m)")
+    axes[0].grid(True)
+
+    axes[1].plot(times, ys)
+    axes[1].set_xlabel("Time (s)")
+    axes[1].set_ylabel("Vertical position y (m)")
+    axes[1].grid(True)
+
+    fig.suptitle("Independent Test: Position vs Time")
+    fig.tight_layout()
+
+    fig.savefig(
+        output_dir / "position_vs_time.png",
+        dpi=300
+    )
+    plt.close(fig)
+
+    # Spatial trajectory
+    fig, ax = plt.subplots(figsize=(11, 6))
+
+    ax.plot(xs, ys, label="Spider-Man trajectory")
+    ax.scatter(xs[0], ys[0], marker="o", label="Start")
+    ax.scatter(xs[-1], ys[-1], marker="x", label="End")
+
+    ax.set_xlabel("Horizontal position x (m)")
+    ax.set_ylabel("Vertical position y (m)")
+    ax.set_title("Independent Test: 2D Trajectory")
+    ax.set_aspect("equal", adjustable="box")
+    ax.grid(True)
+    ax.legend()
+
+    fig.tight_layout()
+    fig.savefig(
+        output_dir / "trajectory_2d.png",
+        dpi=300
+    )
+    plt.close(fig)
+
+    return output_dir
 
 if __name__ == '__main__':
     show_energy_plot()

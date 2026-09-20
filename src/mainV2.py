@@ -9,8 +9,10 @@ from .plot import (
     evaluate_scenarios,
     plot_scenario_scores,
     export_scenario_diagnostics,
-    print_scenario_summary
+    print_scenario_summary,
+    plot_trajectory_history
 )
+from .simulation import simv3
 
 from .optim import optim_policy_robust
 
@@ -113,7 +115,8 @@ def main(cfg: DictConfig):
     # INDEPENDENT TEST: Optimised policy under NEW conditions
     # ==========================================================
 
-    print("\n========== INDEPENDENT TEST ==========")
+    # TODO: Move this entire section out to the final sim file for 3D vis
+    print("\n========== INDEPENDENT TEST ==========") 
 
     test_params = common_params.copy()
 
@@ -183,6 +186,31 @@ def main(cfg: DictConfig):
     print_scenario_summary(test_diagnostics)
 
     print(f"Independent test saved to: {test_csv_path}")
+
+    test_result = simv3(
+        theta0=test_params["theta0"],
+        omega0=test_params["omega0"],
+        L=test_params["initial_L"],
+        anchor=test_params["initial_anchor"],
+        policy_params=optim_params,
+        T=test_params["T"],
+        dt=test_params["dt"],
+        y_ground=test_params["y_ground"],
+        drag_params=test_params["drag_params"],
+        anchors=test_params["anchors"],
+        L_min=test_params["L_min"],
+        L_max=test_params["L_max"],
+        min_flight_time=test_params["min_flight_time"]
+    )
+
+    plot_trajectory_history(
+        test_result,
+        test_output_dir
+    )
+
+    print(
+        f"Trajectory plots saved to: {test_output_dir}"
+    )
 
 if __name__ == "__main__":
     main()
