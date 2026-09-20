@@ -282,7 +282,30 @@ def simv3(
             new_anchor = None
             flight_time = t - mode.start_time 
 
-            # 1-check for reattachment if flight time greater than min req
+            # 1- check Ground collision
+            y, vy = state[1], state[3]
+
+            if y <= y_ground and vy < 0: # ground hit
+                # linearly interpolate for better precision
+                if len(mode.states)>=2:
+                    t_prev, state_prev = mode.states[-2]
+                    t_curr, state_curr = mode.states[-1]
+
+                    inter_land_t, inter_land_state = interpolate_landing(t_prev, t_curr, state_prev, state_curr, y_ground)
+
+                    # update released states and times
+                    mode.states[-1] = (inter_land_t, inter_land_state)
+
+                    # update released mode 
+                    mode.end_time = inter_land_t
+                    
+                else: # if only 1 released state present 
+                    mode.end_time = t
+
+                modes.append(mode)
+                break
+
+            # 2-check for reattachment if flight time greater than min req
             if flight_time >= min_flight_time:
                 new_anchor = controller.choose_attachment(state, anchors, policy_params, prev_anchor)
 
@@ -314,29 +337,6 @@ def simv3(
 
                 t += dt
                 continue
-
-            # 2- check Ground collision
-            y, vy = state[1], state[3]
-
-            if y <= y_ground and vy < 0: # ground hit
-                # linearly interpolate for better precision
-                if len(mode.states)>=2:
-                    t_prev, state_prev = mode.states[-2]
-                    t_curr, state_curr = mode.states[-1]
-
-                    inter_land_t, inter_land_state = interpolate_landing(t_prev, t_curr, state_prev, state_curr, y_ground)
-
-                    # update released states and times
-                    mode.states[-1] = (inter_land_t, inter_land_state)
-
-                    # update released mode 
-                    mode.end_time = inter_land_t
-                    
-                else: # if only 1 released state present 
-                    mode.end_time = t
-
-                modes.append(mode)
-                break
 
             #3- otherwise go to next released state
             state = solver.step_released(state, drag_params)
