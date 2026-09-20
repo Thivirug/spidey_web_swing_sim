@@ -58,7 +58,8 @@ def main(cfg: DictConfig):
         })
 
         scenarios.append(params)
-
+        scenario_names.append(s.name)
+        
     # optim - run nelder mead 
     optim_params, best_cost, history = optim_policy_robust(
         initial_p=init_p,
