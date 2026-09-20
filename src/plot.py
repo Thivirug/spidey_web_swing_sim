@@ -286,7 +286,7 @@ def plot_scenario_scores(scores, output_dir):
     plt.title("Robust Controller Performance Across Scenarios")
 
     plt.xticks(
-        np.arange(1, len(scores) + 1)
+        np.arange(1, len(scores) + 1), rotation="vertical", fontsize=7
     )
 
     plt.legend()
