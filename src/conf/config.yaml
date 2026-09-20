@@ -18,6 +18,10 @@ optim:
       dist_scale: 50.0 
       vel_scale: 10.0
       failure_penalty: 5.0
+      min_distance: 50.0
+      min_reattachments: 3
+      distance_penalty: 1.0
+      attachment_penalty: 1.0
 
 hydra:
   run:

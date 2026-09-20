@@ -1,6 +1,5 @@
 # @package _global_
-# stress test: a different shared environment and a diverse set of
-# initial conditions. 
+# stress test: a different shared environment and a diverse set of initial conditions. 
 
 simulation:
   T: 25.0
@@ -54,17 +53,6 @@ scenarios:
     initial_anchor: [-2.0, 21.0]
 
   # High-speed / aggressive launch (stress missed-anchor and ground handling)
-  - name: high_momentum_01
-    theta0_deg: -18.0
-    omega0: 1.8
-    initial_L: 8.0
-    initial_anchor: [0.0, 22.0]
-
-  - name: high_momentum_02
-    theta0_deg: -35.0
-    omega0: 2.0
-    initial_L: 12.0
-    initial_anchor: [-1.0, 24.0]
 
   - name: high_momentum_short_web
     theta0_deg: -12.0
@@ -218,3 +206,500 @@ scenarios:
     omega0: 0.1
     initial_L: 5.5
     initial_anchor: [3.0, 17.0]
+
+    # ========================================
+  # Group 7: Low-energy combinations
+  # Scenarios 29–36
+  # ========================================
+
+  - name: low_energy_29
+    theta0_deg: -70.0
+    omega0: 0.02
+    initial_L: 8.0
+    initial_anchor: [0.0, 22.0]
+
+  - name: low_energy_30
+    theta0_deg: -55.0
+    omega0: 0.08
+    initial_L: 14.0
+    initial_anchor: [-2.0, 25.0]
+
+  - name: low_energy_31
+    theta0_deg: -35.0
+    omega0: 0.12
+    initial_L: 6.0
+    initial_anchor: [1.0, 19.0]
+
+  - name: low_energy_32
+    theta0_deg: -75.0
+    omega0: 0.15
+    initial_L: 12.0
+    initial_anchor: [-4.0, 27.0]
+
+  - name: low_energy_33
+    theta0_deg: -20.0
+    omega0: 0.01
+    initial_L: 10.0
+    initial_anchor: [3.0, 21.0]
+
+  - name: low_energy_34
+    theta0_deg: -62.0
+    omega0: 0.20
+    initial_L: 7.5
+    initial_anchor: [-1.0, 17.0]
+
+  - name: low_energy_35
+    theta0_deg: -45.0
+    omega0: 0.03
+    initial_L: 14.5
+    initial_anchor: [2.0, 26.0]
+
+  - name: low_energy_36
+    theta0_deg: -10.0
+    omega0: 0.06
+    initial_L: 5.5
+    initial_anchor: [-3.0, 18.0]
+
+
+  # ========================================
+  # Group 8: High-energy combinations
+  # Scenarios 37–44
+  # ========================================
+
+  - name: high_energy_37
+    theta0_deg: -65.0
+    omega0: 2.6
+    initial_L: 11.0
+    initial_anchor: [0.0, 24.0]
+
+  - name: high_energy_38
+    theta0_deg: -30.0
+    omega0: 3.0
+    initial_L: 8.0
+    initial_anchor: [-2.0, 22.0]
+
+  - name: high_energy_39
+    theta0_deg: -45.0
+    omega0: 2.3
+    initial_L: 14.0
+    initial_anchor: [3.0, 28.0]
+
+  - name: high_energy_40
+    theta0_deg: -15.0
+    omega0: 2.7
+    initial_L: 6.0
+    initial_anchor: [-4.0, 19.0]
+
+  - name: high_energy_41
+    theta0_deg: -75.0
+    omega0: 2.1
+    initial_L: 12.5
+    initial_anchor: [1.0, 25.0]
+
+  - name: high_energy_42
+    theta0_deg: -25.0
+    omega0: 3.2
+    initial_L: 10.0
+    initial_anchor: [4.0, 23.0]
+
+  - name: high_energy_43
+    theta0_deg: -55.0
+    omega0: 2.8
+    initial_L: 7.0
+    initial_anchor: [-3.0, 20.0]
+
+  - name: high_energy_44
+    theta0_deg: -40.0
+    omega0: 2.4
+    initial_L: 14.5
+    initial_anchor: [2.0, 30.0]
+
+
+  # ========================================
+  # Group 9: Extreme web lengths
+  # Scenarios 45–52
+  # ========================================
+
+  - name: web_extreme_45
+    theta0_deg: -60.0
+    omega0: 0.5
+    initial_L: 5.0
+    initial_anchor: [0.0, 18.0]
+
+  - name: web_extreme_46
+    theta0_deg: -30.0
+    omega0: 1.5
+    initial_L: 15.0
+    initial_anchor: [-2.0, 25.0]
+
+  - name: web_extreme_47
+    theta0_deg: -45.0
+    omega0: 2.0
+    initial_L: 5.2
+    initial_anchor: [3.0, 21.0]
+
+  - name: web_extreme_48
+    theta0_deg: -70.0
+    omega0: 0.3
+    initial_L: 14.8
+    initial_anchor: [0.0, 19.0]
+
+  - name: web_extreme_49
+    theta0_deg: -20.0
+    omega0: 2.2
+    initial_L: 5.5
+    initial_anchor: [-4.0, 24.0]
+
+  - name: web_extreme_50
+    theta0_deg: -55.0
+    omega0: 1.1
+    initial_L: 14.7
+    initial_anchor: [2.0, 18.0]
+
+  - name: web_extreme_51
+    theta0_deg: -35.0
+    omega0: 0.1
+    initial_L: 5.1
+    initial_anchor: [-1.0, 17.0]
+
+  - name: web_extreme_52
+    theta0_deg: -65.0
+    omega0: 1.8
+    initial_L: 15.0
+    initial_anchor: [4.0, 29.0]
+
+
+  # ========================================
+  # Group 10: Initial anchor positions
+  # Scenarios 53–60
+  # ========================================
+
+  - name: anchor_position_53
+    theta0_deg: -40.0
+    omega0: 0.8
+    initial_L: 10.0
+    initial_anchor: [-8.0, 22.0]
+
+  - name: anchor_position_54
+    theta0_deg: -40.0
+    omega0: 0.8
+    initial_L: 10.0
+    initial_anchor: [8.0, 22.0]
+
+  - name: anchor_position_55
+    theta0_deg: -40.0
+    omega0: 0.8
+    initial_L: 10.0
+    initial_anchor: [0.0, 13.0]
+
+  - name: anchor_position_56
+    theta0_deg: -40.0
+    omega0: 0.8
+    initial_L: 10.0
+    initial_anchor: [0.0, 32.0]
+
+  - name: anchor_position_57
+    theta0_deg: -25.0
+    omega0: 1.4
+    initial_L: 8.0
+    initial_anchor: [-10.0, 18.0]
+
+  - name: anchor_position_58
+    theta0_deg: -25.0
+    omega0: 1.4
+    initial_L: 8.0
+    initial_anchor: [10.0, 28.0]
+
+  - name: anchor_position_59
+    theta0_deg: -60.0
+    omega0: 0.4
+    initial_L: 12.0
+    initial_anchor: [-7.0, 30.0]
+
+  - name: anchor_position_60
+    theta0_deg: -60.0
+    omega0: 0.4
+    initial_L: 12.0
+    initial_anchor: [7.0, 16.0]
+
+
+  # ========================================
+  # Group 11: Reverse momentum
+  # Scenarios 61–68
+  # ========================================
+
+  - name: reverse_61
+    theta0_deg: -20.0
+    omega0: -0.1
+    initial_L: 8.0
+    initial_anchor: [0.0, 20.0]
+
+  - name: reverse_62
+    theta0_deg: -45.0
+    omega0: -0.5
+    initial_L: 12.0
+    initial_anchor: [-2.0, 24.0]
+
+  - name: reverse_63
+    theta0_deg: -70.0
+    omega0: -1.0
+    initial_L: 10.0
+    initial_anchor: [3.0, 22.0]
+
+  - name: reverse_64
+    theta0_deg: -35.0
+    omega0: -1.5
+    initial_L: 6.0
+    initial_anchor: [-4.0, 18.0]
+
+  - name: reverse_65
+    theta0_deg: -55.0
+    omega0: -0.2
+    initial_L: 14.0
+    initial_anchor: [1.0, 26.0]
+
+  - name: reverse_66
+    theta0_deg: -15.0
+    omega0: -2.0
+    initial_L: 8.5
+    initial_anchor: [4.0, 19.0]
+
+  - name: reverse_67
+    theta0_deg: -65.0
+    omega0: -0.7
+    initial_L: 13.0
+    initial_anchor: [-3.0, 28.0]
+
+  - name: reverse_68
+    theta0_deg: -30.0
+    omega0: -1.2
+    initial_L: 5.5
+    initial_anchor: [2.0, 17.0]
+
+
+  # ========================================
+  # Group 12: Coupled perturbations
+  # Scenarios 69–76
+  # ========================================
+
+  - name: coupled_69
+    theta0_deg: -72.0
+    omega0: 2.1
+    initial_L: 14.0
+    initial_anchor: [-6.0, 18.0]
+
+  - name: coupled_70
+    theta0_deg: -12.0
+    omega0: 0.05
+    initial_L: 5.0
+    initial_anchor: [6.0, 16.0]
+
+  - name: coupled_71
+    theta0_deg: -58.0
+    omega0: -0.8
+    initial_L: 14.5
+    initial_anchor: [-5.0, 17.0]
+
+  - name: coupled_72
+    theta0_deg: -18.0
+    omega0: 3.0
+    initial_L: 5.5
+    initial_anchor: [5.0, 25.0]
+
+  - name: coupled_73
+    theta0_deg: -80.0
+    omega0: 0.4
+    initial_L: 12.0
+    initial_anchor: [-8.0, 30.0]
+
+  - name: coupled_74
+    theta0_deg: -40.0
+    omega0: 2.7
+    initial_L: 13.5
+    initial_anchor: [8.0, 19.0]
+
+  - name: coupled_75
+    theta0_deg: -65.0
+    omega0: 0.02
+    initial_L: 6.0
+    initial_anchor: [-9.0, 15.0]
+
+  - name: coupled_76
+    theta0_deg: -25.0
+    omega0: -1.8
+    initial_L: 14.0
+    initial_anchor: [9.0, 31.0]
+
+
+  # ========================================
+  # Group 13: Boundary conditions
+  # Scenarios 77–84
+  # ========================================
+
+  - name: boundary_77
+    theta0_deg: -80.0
+    omega0: 0.0
+    initial_L: 5.0
+    initial_anchor: [0.0, 20.0]
+
+  - name: boundary_78
+    theta0_deg: -5.0
+    omega0: 0.0
+    initial_L: 15.0
+    initial_anchor: [0.0, 20.0]
+
+  - name: boundary_79
+    theta0_deg: -80.0
+    omega0: 3.0
+    initial_L: 15.0
+    initial_anchor: [-2.0, 30.0]
+
+  - name: boundary_80
+    theta0_deg: -5.0
+    omega0: -2.0
+    initial_L: 5.0
+    initial_anchor: [2.0, 16.0]
+
+  - name: boundary_81
+    theta0_deg: -75.0
+    omega0: 0.01
+    initial_L: 14.9
+    initial_anchor: [-4.0, 16.0]
+
+  - name: boundary_82
+    theta0_deg: -10.0
+    omega0: 3.0
+    initial_L: 5.1
+    initial_anchor: [4.0, 28.0]
+
+  - name: boundary_83
+    theta0_deg: -70.0
+    omega0: -2.0
+    initial_L: 14.8
+    initial_anchor: [-6.0, 25.0]
+
+  - name: boundary_84
+    theta0_deg: -5.0
+    omega0: 0.05
+    initial_L: 5.2
+    initial_anchor: [6.0, 18.0]
+
+
+  # ========================================
+  # Group 14: Intermediate conditions
+  # Scenarios 85–92
+  # ========================================
+
+  - name: intermediate_85
+    theta0_deg: -35.0
+    omega0: 0.6
+    initial_L: 8.0
+    initial_anchor: [-2.0, 21.0]
+
+  - name: intermediate_86
+    theta0_deg: -45.0
+    omega0: 1.0
+    initial_L: 11.0
+    initial_anchor: [2.0, 23.0]
+
+  - name: intermediate_87
+    theta0_deg: -25.0
+    omega0: 1.3
+    initial_L: 13.0
+    initial_anchor: [-4.0, 25.0]
+
+  - name: intermediate_88
+    theta0_deg: -55.0
+    omega0: 0.9
+    initial_L: 7.0
+    initial_anchor: [4.0, 19.0]
+
+  - name: intermediate_89
+    theta0_deg: -30.0
+    omega0: 1.6
+    initial_L: 10.0
+    initial_anchor: [-1.0, 27.0]
+
+  - name: intermediate_90
+    theta0_deg: -50.0
+    omega0: 0.35
+    initial_L: 12.0
+    initial_anchor: [1.0, 18.0]
+
+  - name: intermediate_91
+    theta0_deg: -20.0
+    omega0: 1.1
+    initial_L: 9.0
+    initial_anchor: [-3.0, 22.0]
+
+  - name: intermediate_92
+    theta0_deg: -60.0
+    omega0: 1.4
+    initial_L: 14.0
+    initial_anchor: [3.0, 29.0]
+
+
+  # ========================================
+  # Group 15: Mixed stress tests
+  # Scenarios 93–100
+  # ========================================
+
+  - name: mixed_stress_93
+    theta0_deg: -78.0
+    omega0: 2.8
+    initial_L: 14.5
+    initial_anchor: [-10.0, 17.0]
+
+  - name: mixed_stress_94
+    theta0_deg: -8.0
+    omega0: 0.02
+    initial_L: 14.8
+    initial_anchor: [10.0, 16.0]
+
+  - name: mixed_stress_95
+    theta0_deg: -68.0
+    omega0: -1.7
+    initial_L: 5.5
+    initial_anchor: [-8.0, 26.0]
+
+  - name: mixed_stress_96
+    theta0_deg: -22.0
+    omega0: 3.2
+    initial_L: 13.0
+    initial_anchor: [8.0, 30.0]
+
+  - name: mixed_stress_97
+    theta0_deg: -82.0
+    omega0: 0.08
+    initial_L: 10.0
+    initial_anchor: [-6.0, 14.0]
+
+  - name: mixed_stress_98
+    theta0_deg: -12.0
+    omega0: -1.4
+    initial_L: 6.0
+    initial_anchor: [6.0, 18.0]
+
+  - name: mixed_stress_99
+    theta0_deg: -48.0
+    omega0: 2.5
+    initial_L: 15.0
+    initial_anchor: [-5.0, 32.0]
+
+  - name: mixed_stress_100
+    theta0_deg: -32.0
+    omega0: -0.9
+    initial_L: 9.5
+    initial_anchor: [5.0, 21.0]
+
+  - name: high_momentum_99
+    theta0_deg: -18.0
+    omega0: 1.8
+    initial_L: 8.0
+    initial_anchor: [0.0, 22.0]
+
+  - name: high_momentum_100
+    theta0_deg: -35.0
+    omega0: 2.0
+    initial_L: 12.0
+    initial_anchor: [-1.0, 24.0]
