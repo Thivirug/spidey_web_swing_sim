@@ -13,7 +13,7 @@ from .plot import (
     plot_trajectory_history
 )
 from .simulation import simv3
-
+from .events import WebAttachedEvent
 from .optim import optim_policy_robust
 
 @hydra.main(version_base=None, config_name="config", config_path="conf")
@@ -186,6 +186,35 @@ def main(cfg: DictConfig):
     print_scenario_summary(test_diagnostics)
 
     print(f"Independent test saved to: {test_csv_path}")
+
+    print("\n========== EVENT HISTORY ==========")
+
+    for i, mode in enumerate(test_result.modes, start=1):
+
+        print(
+            f"Event {i}: "
+            f"{type(mode).__name__} | "
+            f"start={mode.start_time:.3f}s | "
+            f"end={mode.end_time}"
+        )
+
+        if isinstance(mode, WebAttachedEvent):
+            print(
+                f"  Anchor: {mode.anchor} | "
+                f"Web length: {mode.L:.3f}m"
+            )
+
+            theta_values = [
+                state[0]
+                for _, state in mode.states
+            ]
+
+            print(
+                f"  Theta range: "
+                f"{np.degrees(min(theta_values)):.2f}° "
+                f"to "
+                f"{np.degrees(max(theta_values)):.2f}°"
+            )
 
     test_result = simv3(
         theta0=test_params["theta0"],
