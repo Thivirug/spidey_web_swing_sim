@@ -122,15 +122,13 @@ def objv1(sim_res: FinalSimResult):
 
 def objv2(
     sim_res: FinalSimResult,
-    w_dist=0.7,
-    w_vel=0.3,
+    T,
+    w_dist=0.8,
+    w_vel=0.7,
     dist_scale=50.0,
     vel_scale=10.0,
-    failure_penalty=5.0,
-    min_distance=50.0, # min horiz dist travelled
-    min_reattachments=3,
-    distance_penalty=1.0,
-    attachment_penalty=1.0
+    failure_penalty=0.1, # base penalty if collision at t=T
+    early_collision_penalty=10.0,
 ):
     """
         Maximise:
@@ -138,16 +136,20 @@ def objv2(
             - Retained horizontal velocity
 
         Penalise:
-            - Ground collision
-            - Insufficient displacement
-            - Insufficient reattachments
+            - Every ground collision
+            - Earlier collisions more heavily
+
     """
+
+    if T <= 0:
+        raise ValueError("T must be positive.")
+
+    if dist_scale <= 0 or vel_scale <= 0:
+        raise ValueError("Normalisation scales must be positive.")
 
     modes = sim_res.modes
 
-    # Base performance (horiz dist)
     distance = objv1(sim_res)
-
     final_state = get_final_cartesian_state(modes)
     vx_final = final_state[2]
 
@@ -156,42 +158,26 @@ def objv2(
         + w_vel * (vx_final / vel_scale)
     )
 
-    # Ground collision penalty
     if sim_res.termination_reason == "ground_collision":
-        score -= failure_penalty
+        t_collision = modes[-1].end_time
 
-    # Insufficient distance penalty
-    distance_shortfall = max(
-        0.0,
-        min_distance - distance
-    )
+        if t_collision is None:
+            raise ValueError(
+                "Collision event has no end_time."
+            )
 
-    score -= ( # subtract a proportional penalty based on how shortcoming the travelled dist is
-        distance_penalty
-        * distance_shortfall
-        / min_distance
-    )
+        survival_fraction = np.clip( # colliding time as a fraction of total sim time T
+            t_collision / T,
+            0.0,
+            1.0
+        )
 
-    # Insufficient reattachment penalty
-    attached_count = sum(
-        isinstance(mode, WebAttachedEvent)
-        for mode in modes
-    )
+        collision_penalty = (
+            failure_penalty 
+            + early_collision_penalty
+            * (1.0 - survival_fraction)
+        )
 
-    reattachments = max(
-        0,
-        attached_count - 1 # since starting state is always attached
-    )
-
-    attachment_shortfall = max(
-        0,
-        min_reattachments - reattachments
-    )
-
-    score -= ( # subtract a proportional penalty ...
-        attachment_penalty
-        * attachment_shortfall
-        / min_reattachments
-    )
+        score -= collision_penalty
 
     return score

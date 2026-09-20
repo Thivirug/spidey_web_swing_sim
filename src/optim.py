@@ -71,10 +71,10 @@ def policy_cost(
         score = objv1(result)
     elif obj_info[0] == 'v2':
         if obj_info[1] is None:
-            score = objv2(result)
+            score = objv2(result, T)
         else:
             score = objv2(
-                result,
+                result, T,
                 **obj_info[1]
             )
     else:

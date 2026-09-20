@@ -176,11 +176,11 @@ def evaluate_scenarios(
         elif obj_info[0] == "v2":
 
             if obj_info[1] is None:
-                score = objv2(sim_result)
+                score = objv2(sim_result, scenario["T"])
 
             else:
                 score = objv2(
-                    sim_result,
+                    sim_result, scenario["T"],
                     **obj_info[1]
                 )
 
