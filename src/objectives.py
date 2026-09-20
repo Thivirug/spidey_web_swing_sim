@@ -136,9 +136,6 @@ def objv2(sim_res: FinalSimResult, w_dist=0.7, w_vel=0.3, dist_scale=50.0, vel_s
     final_state = get_final_cartesian_state(modes)
     vx_final = final_state[2]
 
-    norm_distance = distance / dist_scale
-    norm_velocity = vx_final / vel_scale
-
     score = (
         w_dist * (distance / dist_scale)
         + w_vel * (vx_final / vel_scale)
