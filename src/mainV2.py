@@ -170,10 +170,10 @@ def main(cfg: DictConfig):
         / "independent_test"
     )
 
-    plot_scenario_scores(
-        test_scores,
-        test_output_dir
-    )
+    # plot_scenario_scores(
+    #     test_scores,
+    #     test_output_dir
+    # )
 
     test_csv_path = export_scenario_diagnostics(
         test_diagnostics,
