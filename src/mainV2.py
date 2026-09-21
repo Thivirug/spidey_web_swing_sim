@@ -118,13 +118,13 @@ def main(cfg: DictConfig):
 
     # Change simulation conditions independently of optimisation
     test_params.update({
-        "theta0": np.radians(-45.0),
-        "omega0": 1.2,
+        "theta0": np.radians(-60.0),
+        "omega0": 0.0,
         "initial_L": 10.0,
         "initial_anchor": (0.0, 22.0),
 
         # Longer simulation
-        "T": 50.0,
+        "T": 150.0,
 
         # # Independent city layout: different from the config the controller was optimised for
         # "anchors": [
