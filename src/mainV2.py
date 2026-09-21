@@ -112,7 +112,6 @@ def main(cfg: DictConfig):
 
     # INDEPENDENT TEST: Optimised policy under NEW conditions
 
-    # TODO: Move this entire section out to the final sim file for 3D vis
     print("\n========== INDEPENDENT TEST ==========") 
 
     test_params = common_params.copy()
