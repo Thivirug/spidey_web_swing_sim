@@ -36,12 +36,14 @@ class LiveSimulator:
     ):
         self.solver = RK4(dt)
         self.controller = WebSwingController(L_min, L_max)
+
+        self.dt = dt
         self.T = T
         self.t = 0.0
         self.y_ground = y_ground
         self.min_flight_time = min_flight_time
         self.policy_params = policy_params
-        self.drag_params - drag_params
+        self.drag_params = drag_params
         self.anchors = anchors
 
         # starting state is always attached
