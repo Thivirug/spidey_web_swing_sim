@@ -3,6 +3,7 @@ from ursina import Ursina, Entity, color, camera, time, Vec3
 
 from src.controller import PolicyParams
 from sim.sim_live import LiveSimulator
+from sim.assets.city import City
 
 # 1. Simulation configuratio
 
@@ -73,11 +74,10 @@ spiderman = Entity(
     ),
 )
 
-ground = Entity(
-    model="cube",
-    color=color.green,
-    scale=(200, 0.5, 30),
-    position=(75, -0.25, 0),
+# Create the city from the SAME anchors passed to LiveSimulator.
+city = City(
+    anchors=anchors,
+    y_ground=0.0,
 )
 
 # Perspective camera positioned at an angle to the XY plane.
