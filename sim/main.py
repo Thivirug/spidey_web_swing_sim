@@ -4,6 +4,7 @@ from ursina import Ursina, Entity, color, camera, time, Vec3
 from src.controller import PolicyParams
 from sim.sim_live import LiveSimulator
 from sim.assets.city import City
+from sim.assets.web import Web
 
 # 1. Simulation configuratio
 
@@ -74,6 +75,8 @@ spiderman = Entity(
     ),
 )
 
+web = Web()
+
 # Create the city from the SAME anchors passed to LiveSimulator.
 city = City(
     anchors=anchors,
@@ -113,6 +116,8 @@ def update():
         state["y"],
         -2,
     )
+
+    web.update(state)
 
 # 4. Start the applicatio
 
