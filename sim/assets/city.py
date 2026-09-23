@@ -31,7 +31,7 @@ class City:
 
         self.ground = Entity(
             model="cube",
-            color=color.rgb(65, 70, 75),
+            color=color.rgb32(110, 115, 125),
             position=(
                 (left + right) / 2,
                 self.y_ground - 0.25,
@@ -62,7 +62,11 @@ class City:
 
             building = Entity(
                 model="cube",
-                color=color.rgb(shade, shade, shade + 8),
+                color=color.rgb32(
+                    shade,
+                    shade,
+                    min(shade + 8, 255),
+                ),
                 position=(
                     x,
                     self.y_ground + height / 2,

@@ -1,13 +1,14 @@
 from ursina import Entity, color, Vec3
 
+
 class Web:
-    def __init__(self, thickness=0.13, z=-2.2):
+    def __init__(self, thickness=0.10, z=-3.0):
         self.z = z
+        self.thickness = thickness
 
         self.entity = Entity(
             model="cube",
-            color=color.rgb(35, 35, 35), # dark
-            scale=(thickness, thickness, 1.0),
+            color=color.rgb32(35, 35, 35),
             enabled=False,
         )
 
@@ -35,17 +36,17 @@ class Web:
         direction = anchor_pos - spider_pos
         distance = direction.length()
 
+        # Put the web exactly halfway between the endpoints
         self.entity.position = (
             spider_pos + anchor_pos
         ) / 2
 
-        self.entity.scale = (
-            self.entity.scale_x,
-            self.entity.scale_y,
-            distance,
-        )
-
+        # Point the entity's Z axis toward the anchor
         self.entity.look_at(anchor_pos)
 
-    def hide(self):
-        self.entity.enabled = False
+        # THEN apply the length
+        self.entity.scale = Vec3(
+            self.thickness,
+            self.thickness,
+            distance,
+        )

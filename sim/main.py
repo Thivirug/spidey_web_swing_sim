@@ -43,8 +43,8 @@ anchors = [
 ]
 
 simulation = LiveSimulator(
-    theta0=np.radians(-45),
-    omega0=1.2,
+    theta0=np.radians(-70),
+    omega0=0,
     L=10.0,
     anchor=(0.0, 22.0),
     policy_params=policy,
@@ -118,6 +118,12 @@ def update():
     )
 
     web.update(state)
+
+    print(
+        state["time"],
+        state["attached"],
+        state["anchor"],
+    )
 
 # 4. Start the applicatio
 
