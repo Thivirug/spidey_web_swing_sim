@@ -48,14 +48,14 @@ simulation = LiveSimulator(
     L=10.0,
     anchor=(0.0, 22.0),
     policy_params=policy,
-    T=50.0,
+    T=30.0,
     dt=PHYSICS_DT,
     y_ground=0.0,
     drag_params=None,
     anchors=anchors,
     L_min=5.0,
     L_max=15.0,
-    min_flight_time=0.25,
+    min_flight_time=1.2,
 )
 
 # 2. Initialise Ursina
