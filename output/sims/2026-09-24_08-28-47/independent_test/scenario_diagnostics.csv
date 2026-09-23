@@ -1,0 +1,2 @@
+scenario,name,objective_score,termination_reason,termination_time,horizontal_displacement,final_horizontal_velocity,reattachments
+1,independent_test,2.0239662562209,time_limit,150.0,102.31340198084101,5.527883207534916,5
