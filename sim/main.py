@@ -11,8 +11,8 @@ from sim.assets.web import Web
 PHYSICS_DT = 0.01
 
 policy = PolicyParams(
-    theta_r=np.radians(44.082),
-    L=12.064,
+    theta_r=np.radians(50.911),
+    L=5.809,
 )
 
 anchors = [
@@ -58,9 +58,15 @@ simulation = LiveSimulator(
     min_flight_time=1.2,
 )
 
-# 2. Initialise Ursina
+# Initialise Ursina
 
 app = Ursina()
+
+CAMERA_Y = 24
+CAMERA_Z = -55
+CAMERA_X_OFFSET = -8
+CAMERA_LOOK_AHEAD = 8
+CAMERA_FOLLOW_SPEED = 3.0
 
 initial_state = simulation.get_state()
 
@@ -71,7 +77,7 @@ spiderman = Entity(
     position=(
         initial_state["x"],
         initial_state["y"],
-        0,
+        -2,
     ),
 )
 
@@ -86,38 +92,71 @@ city = City(
 # Perspective camera positioned at an angle to the XY plane.
 camera.orthographic = False
 camera.fov = 65
-camera.position = (10, 24, -55)
-camera.look_at((20, 12, 0))
+camera.position = (
+    initial_state["x"] + CAMERA_X_OFFSET,
+    CAMERA_Y,
+    CAMERA_Z,
+)
 
-# 3. Live update loo
+camera.look_at(
+    Vec3(
+        initial_state["x"] + CAMERA_LOOK_AHEAD,
+        15,
+        0,
+    )
+)
 
+# Live update loop
 accumulator = 0.0
-
-
+    
 def update():
     global accumulator
 
-    if simulation.finished:
-        return
+    if not simulation.finished:
 
-    # Accumulate elapsed real-world time.
-    accumulator += time.dt
+        accumulator += time.dt
 
-    # Execute the required number of fixed RK4 steps.
-    while accumulator >= PHYSICS_DT and not simulation.finished:
-        simulation.step()
-        accumulator -= PHYSICS_DT
+        while (
+            accumulator >= PHYSICS_DT
+            and not simulation.finished
+        ):
+            simulation.step()
+            accumulator -= PHYSICS_DT
 
-    # Render the most recently computed state.
     state = simulation.get_state()
 
+    # Spider-Man
     spiderman.position = Vec3(
         state["x"],
         state["y"],
         -2,
     )
 
+    # Web
     web.update(state)
+
+    # Camera follow
+    target_x = state["x"] + CAMERA_X_OFFSET
+
+    camera.x += (
+        target_x - camera.x
+    ) * min(
+        CAMERA_FOLLOW_SPEED * time.dt,
+        1.0,
+    )
+
+    # Keep camera altitude/depth stable
+    camera.y = CAMERA_Y
+    camera.z = CAMERA_Z
+
+    # Look slightly ahead of Spider-Man
+    camera.look_at(
+        Vec3(
+            state["x"] + CAMERA_LOOK_AHEAD,
+            15,
+            0,
+        )
+    )
 
     print(
         state["time"],
@@ -125,6 +164,5 @@ def update():
         state["anchor"],
     )
 
-# 4. Start the applicatio
-
+# Start the application
 app.run()
