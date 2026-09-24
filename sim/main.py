@@ -1,5 +1,5 @@
 import numpy as np
-from ursina import Ursina, Entity, color, camera, time, Vec3
+from ursina import Ursina, Entity, color, camera, time, Vec3, Sky
 
 from src.controller import PolicyParams
 from sim.sim_live import LiveSimulator
@@ -44,7 +44,7 @@ anchors = [
 
 simulation = LiveSimulator(
     theta0=np.radians(-70),
-    omega0=0,
+    omega0=0.0,
     L=10.0,
     anchor=(0.0, 22.0),
     policy_params=policy,
@@ -61,6 +61,14 @@ simulation = LiveSimulator(
 # Initialise Ursina
 
 app = Ursina()
+
+sky = Sky(
+    color=color.rgb32(
+        120,
+        165,
+        210,
+    )
+)
 
 CAMERA_Y = 24
 CAMERA_Z = -55
