@@ -71,14 +71,19 @@ CAMERA_FOLLOW_SPEED = 3.0
 initial_state = simulation.get_state()
 
 spiderman = Entity(
-    model="sphere",
-    color=color.red,
-    scale=1.0,
+    model="assets/models/spidey/spiderman.obj",
+    scale=1.8,
     position=(
         initial_state["x"],
         initial_state["y"],
-        -2,
+        -3,
     ),
+)
+
+hand_anchor = Entity(
+    parent=spiderman,
+    position=(0.77, 1.14, -0.1),
+    visible=False,
 )
 
 web = Web()
@@ -133,7 +138,7 @@ def update():
     )
 
     # Web
-    web.update(state)
+    web.update(state, hand_anchor.world_position,)
 
     # Camera follow
     target_x = state["x"] + CAMERA_X_OFFSET
