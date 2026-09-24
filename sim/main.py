@@ -16,29 +16,40 @@ policy = PolicyParams(
 )
 
 anchors = [
+    # Initial building / starting anchor
+    (0.0, 22.0),
+
+    # Extra building before the existing city starts
+    (4.0, 19.0),
     (8.0, 25.0),
     (13.0, 20.0),
     (19.0, 28.0),
     (24.0, 23.0),
     (31.0, 30.0),
+    (35.0, 25.0),
     (39.0, 22.0),
     (44.0, 27.0),
     (50.0, 19.0),
+    (54.0, 23.0),
     (57.0, 26.0),
     (64.0, 31.0),
     (70.0, 23.0),
     (77.0, 28.0),
+    (81.0, 24.0),
     (85.0, 20.0),
     (91.0, 26.0),
     (98.0, 32.0),
     (105.0, 24.0),
+    (109.0, 27.0),
     (113.0, 29.0),
     (120.0, 21.0),
     (128.0, 27.0),
     (135.0, 33.0),
+    (139.0, 28.0),
     (143.0, 25.0),
     (150.0, 30.0),
     (158.0, 22.0),
+    (162.0, 25.0),
     (166.0, 28.0),
 ]
 
@@ -46,7 +57,7 @@ simulation = LiveSimulator(
     theta0=np.radians(-70),
     omega0=0.0,
     L=10.0,
-    anchor=(0.0, 22.0),
+    anchor=(0.0, 22.0), # if this changes anchor initial in list above needs to be changed asw
     policy_params=policy,
     T=30.0,
     dt=PHYSICS_DT,
